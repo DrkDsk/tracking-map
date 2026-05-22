@@ -38,6 +38,12 @@
     },
     {
       "path": "./projects/tracking-map/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/tracking-map-demo/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/tracking-map-demo/tsconfig.spec.json"
     }
   ]
 }
