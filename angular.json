@@ -2,9 +2,62 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "a0a61f7e-8807-49db-8c3c-abd14b004d93"
   },
   "newProjectRoot": "projects",
   "projects": {
+    "tracking-sdk": {
+      "projectType": "library",
+      "root": "projects/tracking-sdk",
+      "sourceRoot": "projects/tracking-sdk/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tracking-sdk/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tracking-sdk/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/tracking-sdk/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "tracking-map": {
+      "projectType": "library",
+      "root": "projects/tracking-map",
+      "sourceRoot": "projects/tracking-map/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tracking-map/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tracking-map/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/tracking-map/tsconfig.spec.json"
+          }
+        }
+      }
+    }
   }
 }

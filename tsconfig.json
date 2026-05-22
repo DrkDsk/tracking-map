@@ -13,7 +13,11 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "paths": {
+      "tracking-map": ["./dist/tracking-map"],
+      "tracking-sdk": ["./dist/tracking-sdk"]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -21,5 +25,19 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/tracking-sdk/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/tracking-sdk/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/tracking-map/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/tracking-map/tsconfig.spec.json"
+    }
+  ]
 }
