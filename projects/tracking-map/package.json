@@ -1,6 +1,11 @@
 {
   "name": "tracking-map",
   "version": "0.0.1",
+  "scripts": {
+    "ng": "ng",
+    "config": "node ./config/set-env.config.js",
+    "dev": "ng serve"
+  },
   "peerDependencies": {
     "@angular/common": "^21.2.0",
     "@angular/core": "^21.2.0"
