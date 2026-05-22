@@ -1,9 +1,9 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { LiveMapComponent } from 'tracking-map';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [LiveMapComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
