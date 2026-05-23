@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MapComponent } from '@maplibre/ngx-maplibre-gl';
-import { Map } from 'maplibre-gl';
+import { LngLatLike, Map } from 'maplibre-gl';
 import { inject } from '@angular/core';
 import { RoutingService } from '../../services/maps/routing_service';
 import { MapService } from '../../services/maps/map.service';
@@ -17,8 +17,12 @@ export class LiveMapComponent {
   private mapService = inject(MapService);
 
   mapStyle = 'https://api.maptiler.com/maps/hybrid-v4/style.json?key=NOlJEA2Zes5006iTaZav';
-  zoom: [number] = [6];
+  zoom: [number] = [1];
   center: [number, number] = [-102.5528, 23.6345];
+  mexicoBounds: [LngLatLike, LngLatLike] = [
+    [-130, 5],
+    [-75, 40],
+  ];
 
   onMapLoad(map: Map) {
     this.mapService.initialize(map);
