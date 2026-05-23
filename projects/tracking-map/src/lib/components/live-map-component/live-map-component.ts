@@ -3,7 +3,7 @@ import { MapComponent } from '@maplibre/ngx-maplibre-gl';
 import { Map } from 'maplibre-gl';
 import { inject } from '@angular/core';
 import { RoutingService } from '../../services/maps/routing_service';
-import { MapService } from '../../services/maps/MapService';
+import { MapService } from '../../services/maps/map.service';
 
 @Component({
   selector: 'live-map-component',
@@ -17,7 +17,7 @@ export class LiveMapComponent {
   private mapService = inject(MapService);
 
   mapStyle = 'https://api.maptiler.com/maps/hybrid-v4/style.json?key=NOlJEA2Zes5006iTaZav';
-  zoom: [number] = [4];
+  zoom: [number] = [6];
   center: [number, number] = [-102.5528, 23.6345];
 
   onMapLoad(map: Map) {
@@ -33,7 +33,6 @@ export class LiveMapComponent {
         const coordinates = route.routes[0].geometry.coordinates;
         console.log(coordinates);
         this.mapService.drawRoute(coordinates);
-        //this.mapService.jumpTo(coordinates[0]);
       });
   }
 }
