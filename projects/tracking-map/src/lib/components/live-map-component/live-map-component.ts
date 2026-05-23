@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { MapComponent } from '@maplibre/ngx-maplibre-gl';
-import { GeoJSONSource, Map } from 'maplibre-gl';
+import { Map } from 'maplibre-gl';
 import { inject } from '@angular/core';
 import { RoutingService } from '../../services/maps/routing_service';
-import { RouteConfig } from '../../core/models/route_config';
+import { MapService } from '../../services/maps/MapService';
 
 @Component({
   selector: 'live-map-component',
@@ -14,55 +14,26 @@ import { RouteConfig } from '../../core/models/route_config';
 })
 export class LiveMapComponent {
   private routingService = inject(RoutingService);
+  private mapService = inject(MapService);
 
   mapStyle = 'https://api.maptiler.com/maps/hybrid-v4/style.json?key=NOlJEA2Zes5006iTaZav';
-  zoom: [number] = [6];
-
-  private map!: Map;
+  zoom: [number] = [4];
+  center: [number, number] = [-102.5528, 23.6345];
 
   onMapLoad(map: Map) {
-    this.map = map;
-
-    this.map.addSource('route', {
-      type: 'geojson',
-      data: {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [],
-        },
-        properties: {},
-      },
-    });
-
-    this.map.addLayer({
-      id: 'route-line',
-      type: 'line',
-      source: 'route',
-      paint: {
-        'line-color': '#d93341',
-        'line-width': 6,
-      },
-    });
-
-    this.routingService.getRoute([-93.74744249, 16.0853598], [-93.06810014, 16.74755547])
-      .subscribe((route) => {
-        const coordinates = route.routes[0].geometry.coordinates;
-        this.drawRoute(coordinates);
-      });
+    this.mapService.initialize(map);
+    this.mapService.setUp();
+    this.loadTrackingRoutes();
   }
 
-  drawRoute(coordinates: number[][]) {
-    if (this.map.getSource('route')) {
-      (this.map.getSource('route') as GeoJSONSource).setData({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates,
-        },
-        properties: {},
+  loadTrackingRoutes() {
+    this.routingService
+      .getRoute([-93.74744249, 16.0853598], [-93.06810014, 16.74755547])
+      .subscribe((route) => {
+        const coordinates = route.routes[0].geometry.coordinates;
+        console.log(coordinates);
+        this.mapService.drawRoute(coordinates);
+        //this.mapService.jumpTo(coordinates[0]);
       });
-      return;
-    }
   }
 }
