@@ -1,4 +1,4 @@
-import { Waypoints } from './waypoints';
+import { Waypoint } from './waypoint';
 
 export interface OutboundOrderResponse {
   statusCode: number;
@@ -15,11 +15,4 @@ export interface OutboundOrder {
   id: number;
   id_seguimiento: string;
   waypoints: Waypoint[];
-}
-
-export interface Waypoint {
-  lat: number;
-  lng: number;
-  type: string;
-  sequence: number;
 }
