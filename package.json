@@ -5,7 +5,7 @@
     "ng": "ng",
     "config": "node ./projects/tracking-map/config/set-env.config.js",
     "dev": "concurrently \"ng build tracking-map --watch\" \"ng serve tracking-map-demo\"",
-    "build:lib": "ng build tracking-map",
+    "build:lib": "npm run config && ng build tracking-map",
     "start": "ng serve",
     "build": "ng build tracking-map-demo",
     "watch": "ng build --watch --configuration development",
