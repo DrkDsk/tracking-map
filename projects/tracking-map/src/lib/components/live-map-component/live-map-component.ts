@@ -9,7 +9,6 @@ import { TrackingRepository } from '../../core/repositories/tracking_repository'
 import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { TrackingRoute } from '../../core/models/tracking_route';
 import { ColorUtils } from '../../core/utils/color_utils';
-import 'maplibre-gl/dist/maplibre-gl.css';
 
 @Component({
   selector: 'live-map-component',
