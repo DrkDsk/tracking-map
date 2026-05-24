@@ -1,4 +1,4 @@
-import { OutboundOrder } from './outbound_order_response';
+import { OutboundOrder } from './outbound_order';
 
 export interface OutboundOrderData {
   unit_id: number;

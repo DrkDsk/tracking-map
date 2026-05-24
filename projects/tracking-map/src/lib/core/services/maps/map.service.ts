@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GeoJSONSource, LngLatLike, Map, Popup } from 'maplibre-gl';
+import { GeoJSONSource, Map, Popup } from 'maplibre-gl';
 import { TrackingRoute } from '../../models/tracking_route';
 import { FeatureCollection, LineString } from 'geojson';
 
@@ -69,17 +69,6 @@ export class MapService {
       });
       this.registerRouteEvents();
     }
-  }
-
-  jumpTo(coordinates: number[]) {
-    const center: LngLatLike = {
-      lng: coordinates[0],
-      lat: coordinates[1],
-    };
-    this.map.flyTo({
-      center: center,
-      zoom: 15,
-    });
   }
 
   private registerRouteEvents(): void {
