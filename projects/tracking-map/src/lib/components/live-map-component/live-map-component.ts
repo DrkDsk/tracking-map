@@ -3,7 +3,7 @@ import { MapComponent } from '@maplibre/ngx-maplibre-gl';
 import { LngLatLike, Map } from 'maplibre-gl';
 import { inject } from '@angular/core';
 import { RoutingService } from '../../core/services/maps/routing_service';
-import { MapService } from '../../core/services/maps/map.service';
+import { MapRenderService } from '../../core/services/maps/map-render.service';
 import { ProviderType } from '../../core/enums/provider_type';
 import { TrackingRepository } from '../../core/repositories/tracking_repository';
 import { forkJoin, map, Observable, switchMap } from 'rxjs';
@@ -19,7 +19,7 @@ import { ColorUtils } from '../../core/utils/color_utils';
 })
 export class LiveMapComponent {
   private routingService = inject(RoutingService);
-  private mapService = inject(MapService);
+  private mapService = inject(MapRenderService);
   private trackingRepository = inject(TrackingRepository);
   private colorUtils = inject(ColorUtils);
 
