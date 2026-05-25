@@ -182,10 +182,7 @@ export class MapRenderService {
         type: 'Feature',
         properties: {
           unitId: String(position.unit_id),
-          provider: ClientType[position.provider],
           label: `Unit ${position.unit_id}`,
-          isInterpolated: Boolean(position.is_interpolated),
-          receivedAt: position.received_at,
           lat: position.lat.toFixed(6),
           lng: position.lng.toFixed(6),
         },
