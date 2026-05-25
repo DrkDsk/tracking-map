@@ -15,12 +15,10 @@ export class TrackingSocketService {
   stream(config: WebsocketConfig): Observable<WebsocketMessage> {
     return new Observable<WebsocketMessage>((observer) => {
       const subscription = {
-        channel: config.channel,
+        channel: "tracking.142",
         event: config.event,
         channelType: config.channelType,
       } as const;
-
-      console.log('Subscribing to channel:', subscription);
 
       this.socketClient.connect(config);
       this.socketClient.subscribe(subscription);
