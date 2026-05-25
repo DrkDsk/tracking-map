@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { LiveMapComponent } from 'tracking-map';
+import { ClientType, LiveMapComponent } from 'tracking-map';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +9,6 @@ import { LiveMapComponent } from 'tracking-map';
 })
 export class App {
   protected readonly title = signal('tracking-map-demo');
+  protected readonly clientTypes = ClientType;
+  protected readonly unitId = 1;
 }
