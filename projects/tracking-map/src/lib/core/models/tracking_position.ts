@@ -1,15 +1,11 @@
-import { ClientType } from '../enums/provider_type';
-
-export type TrackingPositionSource = 'websocket' | 'animation';
-
 export interface TrackingPosition {
   unit_id: string | number;
+  unit_device_id: string | number;
+  unique_id: string | number;
   lat: number;
   lng: number;
-  provider: ClientType;
-  received_at: number;
-  source: TrackingPositionSource;
-  is_interpolated?: boolean;
-  event_name?: string;
-  raw?: unknown;
+  speed: number;
+  angle: number;
+  acc: boolean;
+  gps_time : string;
 }
