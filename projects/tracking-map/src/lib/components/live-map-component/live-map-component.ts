@@ -69,7 +69,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
   ];
 
   @Input()
-  unitId: string | number = 0;
+  unitId: number = 0;
 
   @Input()
   enableRealtime = true;
