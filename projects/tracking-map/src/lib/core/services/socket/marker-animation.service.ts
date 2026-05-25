@@ -53,7 +53,7 @@ export class MarkerAnimationService {
             return timer(0, frameMs).pipe(
               map((tick) => Math.min((tick * frameMs) / durationMs, 1)),
               map((progress) => this.interpolate(previous, current, progress)),
-              takeWhile((position) => position.is_interpolated === true, true),
+              takeWhile((_) => true, true),
             );
           }),
         ),
@@ -74,9 +74,7 @@ export class MarkerAnimationService {
       ...end,
       lat: start.lat + (end.lat - start.lat) * progress,
       lng: start.lng + (end.lng - start.lng) * progress,
-      received_at: Date.now(),
-      source: 'animation',
-      is_interpolated: true,
+      gps_time: Date.now().toString(),
     };
   }
 
