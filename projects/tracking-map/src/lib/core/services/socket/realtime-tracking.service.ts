@@ -51,9 +51,9 @@ export class RealtimeTrackingService {
         ),
         distinctUntilChanged(
           (previous, current) =>
-            previous.coordinates.lat === current.coordinates.lat &&
-            previous.coordinates.lng === current.coordinates.lng &&
-            String(previous.unitId) === String(current.unitId),
+            previous.lat === current.lat &&
+            previous.lng === current.lng &&
+            String(previous.unit_id) === String(current.unit_id),
         ),
         throttleTime(config.throttle.positionIntervalMs, asyncScheduler, {
           leading: true,
