@@ -22,7 +22,7 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
       namespace: config.namespace ?? false,
       channelType: config.channelType,
       channel: this.resolveChannel(config.channel, unitId),
-      event: config.event,
+      event: `.${config.event}`,
       enabledTransports: config.enabledTransports,
       auth: {
         endpoint: config.authEndpoint,
@@ -55,15 +55,18 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
       unit_id: payloadUnitId,
       lat,
       lng,
-      provider: this.provider,
-      received_at: Date.now(),
-      source: 'websocket',
-      event_name: this.getConfig(payloadUnitId).event,
-      raw: payload,
+      gps_time: Date.now().toString(),
+      acc: payload.acc,
+      angle : payload.angle,
+      speed : payload.speed,
+      unique_id : payload.unique_id,
+      unit_device_id : payload.unit_device_id
     };
   }
 
   shouldHandle(position: TrackingPosition, unitId: string | number): boolean {
+    console.log('position', position);
+    console.log('unitId', unitId);
     return String(position.unit_id) === String(unitId);
   }
 
@@ -73,7 +76,7 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
 
   private isRealtimePayload(
     payload: unknown,
-  ): payload is { lat: number; lng: number; unit_id?: string | number } {
+  ): payload is { lat: number; lng: number; unit_id?: string | number; acc: boolean; angle: number; speed: number; unique_id: string; unit_device_id: string } {
     if (typeof payload !== 'object' || payload === null) {
       return false;
     }
