@@ -38,6 +38,9 @@ export class LiveMapComponent {
     [-75, 40],
   ];
 
+  @Input()
+  unitId: string | number = 0;
+
   center: [number, number] = [-102.5528, 23.6345];
 
   onMapLoad(map: Map) {
