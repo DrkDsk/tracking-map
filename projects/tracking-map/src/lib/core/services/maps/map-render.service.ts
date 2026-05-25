@@ -6,7 +6,7 @@ import { FeatureCollection, LineString } from 'geojson';
 @Injectable({
   providedIn: 'root',
 })
-export class MapService {
+export class MapRenderService {
   private map!: Map;
 
   private readonly sourceId = 'routes-source';
