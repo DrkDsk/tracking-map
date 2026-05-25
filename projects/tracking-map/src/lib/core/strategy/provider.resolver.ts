@@ -16,7 +16,7 @@ export class ProviderResolver {
       case ClientType.transmal:
         return this.transmal;
       default:
-        return new ApiServiDieselService();
+        return this.serviDiesel;
     }
   }
 }
