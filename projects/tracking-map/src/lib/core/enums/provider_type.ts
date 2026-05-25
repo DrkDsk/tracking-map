@@ -1,2 +1,2 @@
 
-export enum ProviderType { servidiesel, transmal }
+export enum ClientType { servidiesel, transmal }

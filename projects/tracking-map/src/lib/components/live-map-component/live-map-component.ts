@@ -4,7 +4,7 @@ import { LngLatLike, Map } from 'maplibre-gl';
 import { inject } from '@angular/core';
 import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
-import { ProviderType } from '../../core/enums/provider_type';
+import { ClientType } from '../../core/enums/provider_type';
 import { TrackingRepository } from '../../core/repositories/tracking_repository';
 import { forkJoin, map, Observable, switchMap } from 'rxjs';
 import { TrackingRoute } from '../../core/models/tracking_route';
@@ -19,7 +19,7 @@ import { ColorUtils } from '../../core/utils/color_utils';
 })
 export class LiveMapComponent {
   private routingService = inject(RoutingService);
-  private mapService = inject(MapRenderService);
+  private mapRenderService = inject(MapRenderService);
   private trackingRepository = inject(TrackingRepository);
   private colorUtils = inject(ColorUtils);
 
@@ -30,7 +30,7 @@ export class LiveMapComponent {
   zoom: [number] = [1];
 
   @Input()
-  provider: ProviderType = ProviderType.servidiesel;
+  provider: ClientType = ClientType.servidiesel;
 
   @Input()
   mexicoBounds: [LngLatLike, LngLatLike] = [
@@ -41,7 +41,7 @@ export class LiveMapComponent {
   center: [number, number] = [-102.5528, 23.6345];
 
   onMapLoad(map: Map) {
-    this.mapService.initialize(map);
+    this.mapRenderService.initialize(map);
     this.loadTrackingRoutes();
   }
 
@@ -78,7 +78,7 @@ export class LiveMapComponent {
         })
       )
       .subscribe((response) => {
-        this.mapService.render(response);
+        this.mapRenderService.render(response);
     })
   }
 }
