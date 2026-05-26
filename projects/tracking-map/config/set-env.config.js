@@ -76,8 +76,8 @@ export const environment = {
       scheme: '${process.env.WEBSOCKET_SERVIDIESEL_SCHEME || 'http'}',
       path: '${process.env.WEBSOCKET_SERVIDIESEL_PATH || ''}',
       channelType: '${process.env.WEBSOCKET_SERVIDIESEL_CHANNEL_TYPE || 'public'}',
-      channel: '${process.env.WEBSOCKET_SERVIDIESEL_CHANNEL || 'tracking.units.{unitId}'}',
-      event: '${process.env.WEBSOCKET_SERVIDIESEL_EVENT || 'UnitLocationUpdated'}',
+      channel: '${process.env.WEBSOCKET_SERVIDIESEL_CHANNEL || 'tracking.{unitId}'}',
+      event: '${process.env.WEBSOCKET_SERVIDIESEL_EVENT || 'vehicle.location.updated'}',
       namespace: false,
       enabledTransports: ${formatJson(
         (process.env.WEBSOCKET_SERVIDIESEL_TRANSPORTS || 'ws,wss')
@@ -112,8 +112,8 @@ export const environment = {
       scheme: '${process.env.WEBSOCKET_TRANSMAL_SCHEME || 'http'}',
       path: '${process.env.WEBSOCKET_TRANSMAL_PATH || ''}',
       channelType: '${process.env.WEBSOCKET_TRANSMAL_CHANNEL_TYPE || 'public'}',
-      channel: '${process.env.WEBSOCKET_TRANSMAL_CHANNEL || 'tracking.units.{unitId}'}',
-      event: '${process.env.WEBSOCKET_TRANSMAL_EVENT || 'UnitLocationUpdated'}',
+      channel: '${process.env.WEBSOCKET_TRANSMAL_CHANNEL || 'tracking.{unitId}'}',
+      event: '${process.env.WEBSOCKET_TRANSMAL_EVENT || 'vehicle.location.updated'}',
       namespace: false,
       enabledTransports: ${formatJson(
         (process.env.WEBSOCKET_TRANSMAL_TRANSPORTS || 'ws,wss')
