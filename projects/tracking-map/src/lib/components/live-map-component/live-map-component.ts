@@ -60,7 +60,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
   zoom: [number] = [1];
 
   @Input()
-  provider: ClientType = ClientType.servidiesel;
+  provider: ClientType = 'servidiesel';
 
   @Input()
   mexicoBounds: [LngLatLike, LngLatLike] = [
