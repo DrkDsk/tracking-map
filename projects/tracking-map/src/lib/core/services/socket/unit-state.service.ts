@@ -9,10 +9,7 @@ export class UnitStateService {
   private readonly injector = inject(Injector);
   private readonly unitsState = signal<Map<string, TrackingPosition>>(new Map());
 
-  readonly units = computed(() => this.unitsState());
   readonly positions = computed(() => Array.from(this.unitsState().values()));
-
-  readonly units$ = toObservable(this.units, { injector: this.injector });
   readonly positions$ = toObservable(this.positions, { injector: this.injector });
 
   upsert(position: TrackingPosition): void {
