@@ -74,7 +74,9 @@ export class MarkerAnimationService {
       ...end,
       lat: start.lat + (end.lat - start.lat) * progress,
       lng: start.lng + (end.lng - start.lng) * progress,
-      gps_time: Date.now().toString(),
+      rendered_at: Date.now(),
+      source: 'animation',
+      is_interpolated: true,
     };
   }
 
