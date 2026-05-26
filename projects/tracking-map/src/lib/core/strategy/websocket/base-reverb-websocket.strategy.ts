@@ -1,5 +1,9 @@
 import { ClientType } from '../../enums/provider_type';
-import { TrackingPosition } from '../../models/tracking_position';
+import { TrackingPosition, TrackingPositionPayload } from '../../models/tracking_position';
+import {
+  normalizeTrackingUnitInput,
+  TrackingUnitInput,
+} from '../../models/tracking_unit_reference';
 import { WebsocketConfig, WebsocketEnvironmentConfig } from '../../models/websocket_config';
 import { WebsocketStrategy } from '../../contracts/websocket-strategy.interface';
 
@@ -8,8 +12,9 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
 
   protected abstract getEnvironmentConfig(): WebsocketEnvironmentConfig;
 
-  getConfig(unitId: string | number): WebsocketConfig {
+  getConfig(unit: TrackingUnitInput): WebsocketConfig {
     const config = this.getEnvironmentConfig();
+    const unitReference = normalizeTrackingUnitInput(unit);
 
     return {
       provider: this.provider,
@@ -21,7 +26,7 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
       path: config.path,
       namespace: config.namespace ?? false,
       channelType: config.channelType,
-      channel: this.resolveChannel(config.channel, unitId),
+      channel: this.resolveChannel(config.channel, unitReference.unitId),
       event: `.${config.event}`,
       enabledTransports: config.enabledTransports,
       auth: {
@@ -38,14 +43,16 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
     };
   }
 
-  parse(payload: unknown, unitId: string | number): TrackingPosition | null {
+  parse(payload: unknown, unit: TrackingUnitInput): TrackingPosition | null {
     if (!this.isRealtimePayload(payload)) {
       return null;
     }
 
+    const unitReference = normalizeTrackingUnitInput(unit);
     const lat = Number(payload.lat);
     const lng = Number(payload.lng);
-    const payloadUnitId = payload.unit_id ?? unitId;
+    const payloadUnitId = payload.unit_id ?? unitReference.unitId;
+    const receivedAt = Date.now();
 
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       return null;
@@ -53,34 +60,58 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
 
     return {
       unit_id: payloadUnitId,
+      unit_device_id: payload.unit_device_id,
+      unique_id: payload.unique_id,
       lat,
       lng,
-      gps_time: Date.now().toString(),
       acc: payload.acc,
-      angle : payload.angle,
-      speed : payload.speed,
-      unique_id : payload.unique_id,
-      unit_device_id : payload.unit_device_id
+      angle: payload.angle,
+      speed: payload.speed,
+      gps_time: payload.gps_time,
+      provider: this.provider,
+      received_at: receivedAt,
+      rendered_at: receivedAt,
+      source: 'websocket',
+      is_interpolated: false,
     };
   }
 
-  shouldHandle(position: TrackingPosition, unitId: string | number): boolean {
-    console.log('position', position);
-    console.log('unitId', unitId);
-    return String(position.unit_id) === String(unitId);
+  shouldHandle(position: TrackingPosition, unit: TrackingUnitInput): boolean {
+    const unitReference = normalizeTrackingUnitInput(unit);
+    return String(position.unit_id) === String(unitReference.unitId);
   }
 
   protected resolveChannel(channelTemplate: string, unitId: string | number): string {
     return channelTemplate.replaceAll('{unitId}', String(unitId));
   }
 
-  private isRealtimePayload(
-    payload: unknown,
-  ): payload is { lat: number; lng: number; unit_id?: string | number; acc: boolean; angle: number; speed: number; unique_id: string; unit_device_id: string } {
+  private isRealtimePayload(payload: unknown): payload is TrackingPositionPayload {
     if (typeof payload !== 'object' || payload === null) {
       return false;
     }
 
-    return 'lat' in payload && 'lng' in payload;
+    const candidate = payload as Record<string, unknown>;
+
+    return (
+      'unit_id' in candidate &&
+      (typeof candidate['unit_id'] === 'string' || typeof candidate['unit_id'] === 'number') &&
+      'unit_device_id' in candidate &&
+      (typeof candidate['unit_device_id'] === 'string' ||
+        typeof candidate['unit_device_id'] === 'number') &&
+      'unique_id' in candidate &&
+      (typeof candidate['unique_id'] === 'string' || typeof candidate['unique_id'] === 'number') &&
+      'lat' in candidate &&
+      typeof candidate['lat'] === 'number' &&
+      'lng' in candidate &&
+      typeof candidate['lng'] === 'number' &&
+      'speed' in candidate &&
+      typeof candidate['speed'] === 'number' &&
+      'angle' in candidate &&
+      typeof candidate['angle'] === 'number' &&
+      'acc' in candidate &&
+      typeof candidate['acc'] === 'boolean' &&
+      'gps_time' in candidate &&
+      typeof candidate['gps_time'] === 'string'
+    );
   }
 }
