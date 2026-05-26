@@ -16,8 +16,7 @@ dotenv.config({
 const writeFileUsingFs = (targetPath, environmentFileContent) => {
   writeFile(targetPath, environmentFileContent, (err) => {
     if (err) console.log(err);
-    if (environmentFileContent !== '')
-      console.log(`Wrote variables to ${targetPath}`);
+    if (environmentFileContent !== '') console.log(`Wrote variables to ${targetPath}`);
   });
 };
 
@@ -29,6 +28,30 @@ const envDefaultPath = `${envDirectory}/environment.ts`;
 const envDevelopmentPath = `${envDirectory}/environment.dev.ts`;
 
 console.log(`apiServiceUrl: ${process.env.API_SERVIDIESEL_URL || ''}`);
+
+const parseNumber = (value, fallback) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
+
+const parseBoolean = (value, fallback = false) => {
+  if (value === undefined) return fallback;
+  return value === 'true';
+};
+
+const parseJsonObject = (value) => {
+  if (!value) return {};
+
+  try {
+    const parsed = JSON.parse(value);
+    return typeof parsed === 'object' && parsed !== null ? parsed : {};
+  } catch (error) {
+    console.warn(`Unable to parse JSON object from env value: ${value}`);
+    return {};
+  }
+};
+
+const formatJson = (value) => JSON.stringify(value, null, 4);
 
 const buildEnvironmentFileContent = (
   production,
@@ -43,7 +66,81 @@ export const environment = {
   providers : {
     servidiesel : '${process.env.API_SERVIDIESEL_URL || ''}',
     transmal : '${process.env.API_TRANSMAL_URL || ''}',
-  }
+  },
+  websocket: {
+    servidiesel: {
+      broadcaster: 'reverb',
+      key: '${process.env.WEBSOCKET_SERVIDIESEL_KEY || 'tracking-map-key'}',
+      host: '${process.env.WEBSOCKET_SERVIDIESEL_HOST || 'localhost'}',
+      port: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_PORT, 8080)},
+      scheme: '${process.env.WEBSOCKET_SERVIDIESEL_SCHEME || 'http'}',
+      path: '${process.env.WEBSOCKET_SERVIDIESEL_PATH || ''}',
+      channelType: '${process.env.WEBSOCKET_SERVIDIESEL_CHANNEL_TYPE || 'public'}',
+      channel: '${process.env.WEBSOCKET_SERVIDIESEL_CHANNEL || 'tracking.{unitId}'}',
+      event: '${process.env.WEBSOCKET_SERVIDIESEL_EVENT || 'vehicle.location.updated'}',
+      namespace: false,
+      enabledTransports: ${formatJson(
+        (process.env.WEBSOCKET_SERVIDIESEL_TRANSPORTS || 'ws,wss')
+          .split(',')
+          .map((transport) => transport.trim())
+          .filter(Boolean),
+      )},
+      authEndpoint: '${process.env.WEBSOCKET_SERVIDIESEL_AUTH_ENDPOINT || '/broadcasting/auth'}',
+      authHeaders: ${formatJson(parseJsonObject(process.env.WEBSOCKET_SERVIDIESEL_AUTH_HEADERS))},
+      bearerToken: '${process.env.WEBSOCKET_SERVIDIESEL_BEARER_TOKEN || ''}',
+      withCredentials: ${parseBoolean(process.env.WEBSOCKET_SERVIDIESEL_WITH_CREDENTIALS, false)},
+      activityTimeout: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_ACTIVITY_TIMEOUT, 30000)},
+      pongTimeout: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_PONG_TIMEOUT, 15000)},
+      unavailableTimeout: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_UNAVAILABLE_TIMEOUT, 10000)},
+      reconnect: {
+        maxAttempts: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_MAX_ATTEMPTS, 10)},
+        baseDelayMs: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_BASE_DELAY_MS, 1000)},
+        maxDelayMs: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_MAX_DELAY_MS, 30000)},
+        backoffMultiplier: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_BACKOFF_MULTIPLIER, 2)},
+      },
+      throttle: {
+        positionIntervalMs: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_POSITION_INTERVAL_MS, 250)},
+        animationDurationMs: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_ANIMATION_DURATION_MS, 1200)},
+        animationFrameMs: ${parseNumber(process.env.WEBSOCKET_SERVIDIESEL_ANIMATION_FRAME_MS, 16)},
+      },
+    },
+    transmal: {
+      broadcaster: 'reverb',
+      key: '${process.env.WEBSOCKET_TRANSMAL_KEY || 'tracking-map-key'}',
+      host: '${process.env.WEBSOCKET_TRANSMAL_HOST || 'localhost'}',
+      port: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_PORT, 8080)},
+      scheme: '${process.env.WEBSOCKET_TRANSMAL_SCHEME || 'http'}',
+      path: '${process.env.WEBSOCKET_TRANSMAL_PATH || ''}',
+      channelType: '${process.env.WEBSOCKET_TRANSMAL_CHANNEL_TYPE || 'public'}',
+      channel: '${process.env.WEBSOCKET_TRANSMAL_CHANNEL || 'tracking.{unitId}'}',
+      event: '${process.env.WEBSOCKET_TRANSMAL_EVENT || 'vehicle.location.updated'}',
+      namespace: false,
+      enabledTransports: ${formatJson(
+        (process.env.WEBSOCKET_TRANSMAL_TRANSPORTS || 'ws,wss')
+          .split(',')
+          .map((transport) => transport.trim())
+          .filter(Boolean),
+      )},
+      authEndpoint: '${process.env.WEBSOCKET_TRANSMAL_AUTH_ENDPOINT || '/broadcasting/auth'}',
+      authHeaders: ${formatJson(parseJsonObject(process.env.WEBSOCKET_TRANSMAL_AUTH_HEADERS))},
+      bearerToken: '${process.env.WEBSOCKET_TRANSMAL_BEARER_TOKEN || ''}',
+      withCredentials: ${parseBoolean(process.env.WEBSOCKET_TRANSMAL_WITH_CREDENTIALS, false)},
+      activityTimeout: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_ACTIVITY_TIMEOUT, 30000)},
+      pongTimeout: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_PONG_TIMEOUT, 15000)},
+      unavailableTimeout: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_UNAVAILABLE_TIMEOUT, 10000)},
+      reconnect: {
+        maxAttempts: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_MAX_ATTEMPTS, 10)},
+        baseDelayMs: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_BASE_DELAY_MS, 1000)},
+        maxDelayMs: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_MAX_DELAY_MS, 30000)},
+        backoffMultiplier: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_BACKOFF_MULTIPLIER, 2)},
+      },
+      throttle: {
+        positionIntervalMs: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_POSITION_INTERVAL_MS, 250)},
+        animationDurationMs: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_ANIMATION_DURATION_MS, 1200)},
+        animationFrameMs: ${parseNumber(process.env.WEBSOCKET_TRANSMAL_ANIMATION_FRAME_MS, 16)},
+      },
+    },
+  },
 };
 `;
 

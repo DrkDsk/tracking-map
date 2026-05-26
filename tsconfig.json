@@ -16,7 +16,7 @@
     "module": "preserve",
     "paths": {
       "tracking-map": ["./dist/tracking-map"],
-      "tracking-sdk": ["./dist/tracking-sdk"]
+      "tracking-map-demo": ["./dist/tracking-map-demo"]
     }
   },
   "angularCompilerOptions": {

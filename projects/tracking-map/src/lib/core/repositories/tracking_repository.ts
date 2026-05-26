@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ProviderResolver } from '../strategy/provider.resolver';
-import { ProviderType } from '../enums/provider_type';
+import { ClientType } from '../enums/provider_type';
 
 @Injectable({
   providedIn: 'root',
@@ -8,7 +8,7 @@ import { ProviderType } from '../enums/provider_type';
 export class TrackingRepository {
   private resolver = inject(ProviderResolver);
 
-  getWayPoints(provider: ProviderType, unitId: string | number) {
+  getWayPoints(provider: ClientType, unitId: string | number) {
     return this.resolver.resolve(provider).getWayPoints(unitId);
   }
 }
