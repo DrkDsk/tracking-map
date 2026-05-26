@@ -2,16 +2,16 @@
   "name": "tracking-map",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^21.2.0",
-    "@angular/core": "^21.2.0",
-    "laravel-echo": "^2.3.4",
-    "pusher-js": "^8.5.0",
-    "socket.io-client": "^4.8.3"
+    "@angular/common": "^17.0.0",
+    "@angular/core": "^17.1.1"
   },
   "dependencies": {
     "tslib": "^2.3.0",
     "@maplibre/ngx-maplibre-gl": "^21.0.2",
-    "maplibre-gl": "^5.24.0"
+    "maplibre-gl": "^5.24.0",
+    "laravel-echo": "^2.3.4",
+    "pusher-js": "^8.5.0",
+    "socket.io-client": "^4.8.3"
   },
   "sideEffects": false
 }
