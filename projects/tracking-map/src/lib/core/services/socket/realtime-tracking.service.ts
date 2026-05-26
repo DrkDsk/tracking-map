@@ -1,5 +1,4 @@
-import { computed, inject, Injectable, Injector, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   Observable,
   Subject,
@@ -35,7 +34,6 @@ interface ActiveRealtimeSubscription {
   providedIn: 'root',
 })
 export class RealtimeTrackingService {
-  private readonly injector = inject(Injector);
   private readonly trackingRepository = inject(RealtimeTrackingRepository);
   private readonly trackingSocketService = inject(TrackingSocketService);
 
@@ -44,28 +42,9 @@ export class RealtimeTrackingService {
   );
   private readonly positionsSubject = new Subject<TrackingPosition>();
 
-  readonly connectionState$ = this.trackingSocketService.connectionState$;
-  readonly activeSubscriptions = computed(() =>
-    Array.from(this.activeSubscriptionsState().values()),
-  );
-  readonly activeUnits = computed(() =>
-    this.activeSubscriptions().map((subscription) => subscription.unit),
-  );
-
-  readonly activeSubscriptions$ = toObservable(this.activeSubscriptions, {
-    injector: this.injector,
-  });
-  readonly activeUnits$ = toObservable(this.activeUnits, {
-    injector: this.injector,
-  });
-
   readonly positions$ = this.positionsSubject
     .asObservable()
     .pipe(shareReplay({ bufferSize: 1, refCount: true }));
-
-  track(provider: ClientType, unit: TrackingUnitInput): Observable<TrackingPosition> {
-    return this.subscribeToUnit(provider, unit);
-  }
 
   trackUnits(provider: ClientType, units: TrackingUnitInput[]): Observable<TrackingPosition> {
     const normalizedUnits = units.map((unit) => normalizeTrackingUnitInput(unit));
@@ -79,39 +58,6 @@ export class RealtimeTrackingService {
     return this.positions$.pipe(
       filter((position) => unitKeys.has(this.buildKey(provider, position.unit_id))),
     );
-  }
-
-  subscribeToUnit(provider: ClientType, unit: TrackingUnitInput): Observable<TrackingPosition> {
-    const unitReference = normalizeTrackingUnitInput(unit);
-
-    this.ensureUnitSubscription(provider, unitReference);
-
-    return this.positions$.pipe(
-      filter((position) => this.matches(provider, unitReference.unitId, position)),
-    );
-  }
-
-  unsubscribeFromUnit(provider: ClientType, unit: TrackingUnitInput): void {
-    const unitReference = normalizeTrackingUnitInput(unit);
-    const key = this.buildKey(provider, unitReference.unitId);
-    const activeSubscriptions = new Map(this.activeSubscriptionsState());
-    const activeSubscription = activeSubscriptions.get(key);
-
-    if (!activeSubscription) {
-      return;
-    }
-
-    activeSubscription.refCount -= 1;
-
-    if (activeSubscription.refCount > 0) {
-      activeSubscriptions.set(key, activeSubscription);
-      this.activeSubscriptionsState.set(activeSubscriptions);
-      return;
-    }
-
-    activeSubscription.subscription.unsubscribe();
-    activeSubscriptions.delete(key);
-    this.activeSubscriptionsState.set(activeSubscriptions);
   }
 
   disconnect(): void {
@@ -180,14 +126,6 @@ export class RealtimeTrackingService {
       previous.angle === current.angle &&
       previous.acc === current.acc
     );
-  }
-
-  private matches(
-    provider: ClientType,
-    unitId: string | number,
-    position: TrackingPosition,
-  ): boolean {
-    return position.provider === provider && String(position.unit_id) === String(unitId);
   }
 
   private buildKey(provider: ClientType, unitId: string | number): string {
