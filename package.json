@@ -41,7 +41,7 @@
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   },
-  "main": "dist/tracking-map/fesm2022/tracking-map.mjs",
-  "module": "dist/tracking-map/fesm2022/tracking-map.mjs",
-  "typings": "dist/tracking-map/types/tracking-map.d.ts"
+  "main": "dist/tracking-map/fesm2022/drkdsk-tracking-map.mjs",
+  "module": "dist/tracking-map/fesm2022/drkdsk-tracking-map.mjs",
+  "typings": "dist/tracking-map/types/drkdsk-tracking-map.d.ts"
 }
