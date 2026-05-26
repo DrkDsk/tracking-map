@@ -8,7 +8,7 @@ import { BaseReverbWebsocketStrategy } from './base-reverb-websocket.strategy';
   providedIn: 'root',
 })
 export class ServidieselWebsocketStrategy extends BaseReverbWebsocketStrategy {
-  readonly provider = ClientType.servidiesel;
+  readonly provider: ClientType = 'servidiesel';
 
   protected getEnvironmentConfig(): WebsocketEnvironmentConfig {
     return environment.websocket.servidiesel as WebsocketEnvironmentConfig;

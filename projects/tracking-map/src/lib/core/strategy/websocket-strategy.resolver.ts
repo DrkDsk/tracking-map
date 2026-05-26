@@ -11,9 +11,9 @@ export class WebsocketStrategyResolver {
 
   resolve(provider: ClientType): WebsocketStrategy {
     switch (provider) {
-      case ClientType.servidiesel:
+      case 'servidiesel':
         return this.serviDiesel;
-      case ClientType.transmal:
+      case 'transmal':
         return this.transmal;
       default:
         return this.serviDiesel;

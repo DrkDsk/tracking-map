@@ -8,7 +8,7 @@ import { BaseReverbWebsocketStrategy } from './base-reverb-websocket.strategy';
   providedIn: 'root',
 })
 export class TransmalWebsocketStrategy extends BaseReverbWebsocketStrategy {
-  readonly provider = ClientType.transmal;
+  readonly provider: ClientType = 'transmal';
 
   protected getEnvironmentConfig(): WebsocketEnvironmentConfig {
     return environment.websocket.transmal as WebsocketEnvironmentConfig;

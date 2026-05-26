@@ -3,7 +3,6 @@ import { GeoJSONSource, Map, Popup } from 'maplibre-gl';
 import { TrackingRoute } from '../../models/tracking_route';
 import { FeatureCollection, LineString, Point } from 'geojson';
 import { TrackingPosition } from '../../models/tracking_position';
-import { ClientType } from '../../enums/provider_type';
 
 @Injectable({
   providedIn: 'root',
@@ -182,7 +181,7 @@ export class MapRenderService {
         type: 'Feature',
         properties: {
           unitId: String(position.unit_id),
-          provider: ClientType[position.provider],
+          provider: position.provider,
           label: `Unit ${position.unit_id}`,
           speed: position.speed,
           angle: position.angle,

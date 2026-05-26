@@ -1,2 +1,1 @@
-
-export enum ClientType { servidiesel, transmal }
+export type ClientType = 'servidiesel' | 'transmal';
