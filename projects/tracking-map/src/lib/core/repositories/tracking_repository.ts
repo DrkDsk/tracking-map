@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ProviderResolver } from '../strategy/provider.resolver';
-import { ClientType } from '../enums/provider_type';
+import { ClientType } from '../types/provider_type';
 
 @Injectable({
   providedIn: 'root',
