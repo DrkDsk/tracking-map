@@ -1,4 +1,4 @@
-import { ClientType } from '../../enums/provider_type';
+import { ClientType } from '../../types/provider_type';
 import { TrackingPosition, TrackingPositionPayload } from '../../models/tracking_position';
 import { TrackingUnitInput } from '../../models/tracking_unit_reference';
 import { WebsocketConfig, WebsocketEnvironmentConfig } from '../../models/websocket_config';

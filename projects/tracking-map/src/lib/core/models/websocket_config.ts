@@ -1,4 +1,4 @@
-import { ClientType } from '../enums/provider_type';
+import { ClientType } from '../types/provider_type';
 import { WebsocketChannelType } from './websocket_channel_subscription';
 
 export type WebsocketTransport = 'ws' | 'wss';

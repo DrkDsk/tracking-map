@@ -12,7 +12,7 @@ import { MapComponent } from '@maplibre/ngx-maplibre-gl';
 import { LngLatLike, Map as MapLibreMap } from 'maplibre-gl';
 import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
-import { ClientType } from '../../core/enums/provider_type';
+import { ClientType } from '../../core/types/provider_type';
 import { TrackingRepository } from '../../core/repositories/tracking_repository';
 import { forkJoin, Subscription, map, Observable, switchMap } from 'rxjs';
 import { TrackingRoute } from '../../core/models/tracking_route';

@@ -2,7 +2,7 @@ import { ApiProviderService } from '../contracts/api-provider.service';
 import { ApiServiDieselService } from '../services/clients/api-servidiesel.service';
 import { ApiTransmalService } from '../services/clients/api-transmal.service';
 import { inject, Injectable } from '@angular/core';
-import { ClientType } from '../enums/provider_type';
+import { ClientType } from '../types/provider_type';
 
 @Injectable({ providedIn: 'root' })
 export class ProviderResolver {

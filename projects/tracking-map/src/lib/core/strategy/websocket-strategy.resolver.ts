@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { WebsocketStrategy } from '../contracts/websocket-strategy.interface';
-import { ClientType } from '../enums/provider_type';
+import { ClientType } from '../types/provider_type';
 import { ServidieselWebsocketStrategy } from './websocket/servidiesel-websocket.strategy';
 import { TransmalWebsocketStrategy } from './websocket/transmal-websocket.strategy';
 

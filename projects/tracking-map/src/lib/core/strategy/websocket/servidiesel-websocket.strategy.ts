@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { ClientType } from '../../enums/provider_type';
+import { ClientType } from '../../types/provider_type';
 import { WebsocketEnvironmentConfig } from '../../models/websocket_config';
 import { BaseReverbWebsocketStrategy } from './base-reverb-websocket.strategy';
 

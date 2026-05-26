@@ -10,7 +10,7 @@ import {
   shareReplay,
   throttleTime,
 } from 'rxjs';
-import { ClientType } from '../../enums/provider_type';
+import { ClientType } from '../../types/provider_type';
 import { TrackingPosition, TrackingPositionPayload } from '../../models/tracking_position';
 import { TrackingUnitInput } from '../../models/tracking_unit_reference';
 import { WebsocketConfig } from '../../models/websocket_config';

@@ -1,4 +1,4 @@
-import { ClientType } from '../enums/provider_type';
+import { ClientType } from '../types/provider_type';
 
 export interface TrackingPositionPayload {
   unit_id: string | number;
