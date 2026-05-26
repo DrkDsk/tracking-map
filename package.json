@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "config": "node ./projects/tracking-map/config/set-env.config.js",
+    "config:video": "node ./projects/tracking-video/config/set-env.config.js",
     "dev": "concurrently \"ng build tracking-map --watch\" \"ng serve tracking-map-demo\"",
     "build:lib": "npm run config && ng build tracking-map",
+    "build:video": "npm run config:video && ng build tracking-video",
     "start": "ng serve",
     "build": "ng build tracking-map",
     "watch": "ng build --watch --configuration development",
