@@ -16,7 +16,8 @@
     "module": "preserve",
     "paths": {
       "tracking-map": ["./dist/tracking-map"],
-      "tracking-map-demo": ["./dist/tracking-map-demo"]
+      "tracking-map-demo": ["./dist/tracking-map-demo"],
+      "tracking-video": ["./dist/tracking-video"]
     }
   },
   "angularCompilerOptions": {
@@ -44,6 +45,12 @@
     },
     {
       "path": "./projects/tracking-map-demo/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/tracking-video/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/tracking-video/tsconfig.spec.json"
     }
   ]
 }

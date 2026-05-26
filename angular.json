@@ -119,6 +119,32 @@
           "builder": "@angular/build:unit-test"
         }
       }
+    },
+    "tracking-video": {
+      "projectType": "library",
+      "root": "projects/tracking-video",
+      "sourceRoot": "projects/tracking-video/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/tracking-video/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/tracking-video/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/tracking-video/tsconfig.spec.json"
+          }
+        }
+      }
     }
   }
 }
