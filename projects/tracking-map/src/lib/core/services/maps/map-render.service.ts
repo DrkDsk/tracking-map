@@ -182,7 +182,15 @@ export class MapRenderService {
         type: 'Feature',
         properties: {
           unitId: String(position.unit_id),
+          provider: ClientType[position.provider],
           label: `Unit ${position.unit_id}`,
+          speed: position.speed,
+          angle: position.angle,
+          acc: position.acc ? 'ON' : 'OFF',
+          gpsTime: position.gps_time,
+          uniqueId: String(position.unique_id),
+          unitDeviceId: String(position.unit_device_id),
+          isInterpolated: position.is_interpolated,
           lat: position.lat.toFixed(6),
           lng: position.lng.toFixed(6),
         },
@@ -215,6 +223,10 @@ export class MapRenderService {
           <div>Provider: ${properties['provider']}</div>
           <div>Lat: ${properties['lat']}</div>
           <div>Lng: ${properties['lng']}</div>
+          <div>Speed: ${properties['speed']}</div>
+          <div>Angle: ${properties['angle']}</div>
+          <div>ACC: ${properties['acc']}</div>
+          <div>GPS Time: ${properties['gpsTime']}</div>
         </div>
       `,
         )
