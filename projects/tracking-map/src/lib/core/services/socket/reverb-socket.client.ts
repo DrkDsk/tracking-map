@@ -40,7 +40,7 @@ export class ReverbSocketClient implements WebsocketClient {
   readonly messages$ = this.messagesSubject.asObservable();
 
   connect(config: WebsocketConfig): void {
-    const nextFingerprint = JSON.stringify(config);
+    const nextFingerprint = this.buildConnectionFingerprint(config);
 
     if (this.echo && this.activeFingerprint === nextFingerprint) {
       return;
@@ -48,17 +48,6 @@ export class ReverbSocketClient implements WebsocketClient {
 
     this.disconnect();
     this.connectionStateSubject.next('connecting');
-
-    /*this.echo = new Echo({
-      broadcaster: 'reverb',
-      key: 'OPqUcEaBvucz3LHIIb4TQ9WDl5aTg4kA',
-      wsHost: '192.168.1.67',
-      wsPort: 8080,
-      forceTLS: false,
-      enabledTransports: ['ws'],
-      disableStats: true,
-      Pusher,
-    });*/
 
     this.echo = new Echo<'reverb'>({
       broadcaster: 'reverb',
@@ -168,6 +157,25 @@ export class ReverbSocketClient implements WebsocketClient {
 
   private buildSubscriptionKey(subscription: WebsocketChannelSubscription): string {
     return `${subscription.channelType}:${subscription.channel}:${subscription.event}`;
+  }
+
+  private buildConnectionFingerprint(config: WebsocketConfig): string {
+    return JSON.stringify({
+      provider: config.provider,
+      broadcaster: config.broadcaster,
+      key: config.key,
+      host: config.host,
+      port: config.port,
+      scheme: config.scheme,
+      path: config.path,
+      namespace: config.namespace,
+      enabledTransports: config.enabledTransports,
+      auth: config.auth,
+      reconnect: config.reconnect,
+      activityTimeout: config.activityTimeout,
+      pongTimeout: config.pongTimeout,
+      unavailableTimeout: config.unavailableTimeout,
+    });
   }
 
   private resolveChannel(subscription: WebsocketChannelSubscription): ReverbChannel {
