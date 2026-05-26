@@ -10,8 +10,6 @@ import { ReverbSocketClient } from './reverb-socket.client';
 export class TrackingSocketService {
   private socketClient = inject(ReverbSocketClient);
 
-  readonly connectionState$ = this.socketClient.connectionState$;
-
   stream<TPayload = unknown>(config: WebsocketConfig): Observable<WebsocketMessage<TPayload>> {
     return new Observable<WebsocketMessage<TPayload>>((observer) => {
       const subscription = {
