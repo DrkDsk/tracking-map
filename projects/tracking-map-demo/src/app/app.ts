@@ -9,5 +9,6 @@ import { ClientType, LiveMapComponent } from 'tracking-map';
 })
 export class App {
   protected readonly clientTypes = ClientType;
-  protected readonly unitId = 142;
+  protected readonly unitId = 141;
+  protected readonly trackedUnitIds = [141, 142];
 }
