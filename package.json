@@ -1,5 +1,5 @@
 {
-  "name": "tracking-plugin",
+  "name": "@drkdsk/tracking-plugin",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -8,7 +8,6 @@
     "build:lib": "npm run config && ng build tracking-map",
     "start": "ng serve",
     "build": "ng build tracking-map",
-    "prepare": "npm run build:lib",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
