@@ -1,7 +1,7 @@
 <mgl-map
-  [mapStyle]="mapStyle"
-  [zoom]="zoom"
+  [mapStyle]="mapStyle()"
+  [zoom]="zoom()"
   [center]="center"
   (mapLoad)="onMapLoad($event)"
-  [maxBounds]="mexicoBounds">
+  [maxBounds]="mexicoBounds()">
 </mgl-map>
