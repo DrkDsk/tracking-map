@@ -12,10 +12,10 @@ export class TrackingSocketService {
 
   readonly connectionState$ = this.socketClient.connectionState$;
 
-  stream(config: WebsocketConfig): Observable<WebsocketMessage> {
-    return new Observable<WebsocketMessage>((observer) => {
+  stream<TPayload = unknown>(config: WebsocketConfig): Observable<WebsocketMessage<TPayload>> {
+    return new Observable<WebsocketMessage<TPayload>>((observer) => {
       const subscription = {
-        channel: "tracking.142",
+        channel: config.channel,
         event: config.event,
         channelType: config.channelType,
       } as const;
@@ -26,13 +26,16 @@ export class TrackingSocketService {
       const messagesSubscription = this.socketClient.messages$
         .pipe(
           filter(
-            (message) =>
-              message.channel === subscription.channel &&
-              message.event === subscription.event &&
-              message.channelType === subscription.channelType,
+            (message) => {
+              return (
+                message.channel === subscription.channel &&
+                message.event === subscription.event &&
+                message.channelType === subscription.channelType
+              );
+            },
           ),
         )
-        .subscribe(observer);
+        .subscribe((message) => observer.next(message as WebsocketMessage<TPayload>));
 
       return () => {
         messagesSubscription.unsubscribe();
