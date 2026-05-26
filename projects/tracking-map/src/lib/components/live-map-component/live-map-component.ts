@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MapComponent } from '@maplibre/ngx-maplibre-gl';
-import { LngLatLike, Map } from 'maplibre-gl';
+import { LngLatLike, Map as MapLibreMap } from 'maplibre-gl';
 import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
 import { ClientType } from '../../core/enums/provider_type';
@@ -69,7 +69,10 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
   ];
 
   @Input()
-  unitId: number = 0;
+  unitId: string | number = 0;
+
+  @Input()
+  trackedUnitIds: Array<string | number> = [];
 
   @Input()
   enableRealtime = true;
@@ -88,9 +91,9 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
       .subscribe((positions) => {
         this.mapRenderService.renderUnits(positions);
 
-        const trackedUnit = positions.find(
-          (position) => String(position.unit_id) === String(this.unitId),
-        );
+        const trackedUnit =
+          positions.find((position) => String(position.unit_id) === String(this.unitId)) ??
+          positions.at(0);
 
         if (trackedUnit && this.followLiveUnit && !this.hasFocusedLiveUnit) {
           this.mapRenderService.focusUnit(trackedUnit, this.liveZoom);
@@ -99,7 +102,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
       });
   }
 
-  onMapLoad(map: Map) {
+  onMapLoad(map: MapLibreMap) {
     this.mapLoaded = true;
     this.mapRenderService.initialize(map);
     this.reloadData();
@@ -113,6 +116,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
     if (
       changes['provider'] ||
       changes['unitId'] ||
+      changes['trackedUnitIds'] ||
       changes['enableRealtime'] ||
       changes['followLiveUnit']
     ) {
@@ -180,8 +184,9 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
   }
 
   private startRealtimeTracking(): void {
-    const config = this.realtimeTrackingService.getConfig(this.provider, this.unitId);
-    const positions$ = this.realtimeTrackingService.track(this.provider, this.unitId);
+    const realtimeUnits = this.resolveRealtimeUnitIds();
+    const config = this.realtimeTrackingService.getConfig(this.provider, realtimeUnits[0]);
+    const positions$ = this.realtimeTrackingService.trackUnits(this.provider, realtimeUnits);
 
     this.realtimeSubscription = this.markerAnimationService
       .animate(positions$, config.throttle.animationDurationMs, config.throttle.animationFrameMs)
@@ -195,5 +200,16 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
     this.realtimeSubscription?.unsubscribe();
     this.realtimeSubscription = undefined;
     this.realtimeTrackingService.disconnect();
+  }
+
+  private resolveRealtimeUnitIds(): Array<string | number> {
+    const candidates = this.trackedUnitIds.length > 0 ? this.trackedUnitIds : [this.unitId];
+    const uniqueCandidates = new Map<string, string | number>();
+
+    candidates.forEach((candidate) => {
+      uniqueCandidates.set(String(candidate), candidate);
+    });
+
+    return Array.from(uniqueCandidates.values());
   }
 }
