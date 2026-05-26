@@ -4,5 +4,11 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "allowedNonPeerDependencies" : ["@maplibre/ngx-maplibre-gl", "maplibre-gl"]
+  "allowedNonPeerDependencies": [
+    "@maplibre/ngx-maplibre-gl",
+    "maplibre-gl",
+    "laravel-echo",
+    "pusher-js",
+    "socket.io-client"
+  ]
 }
