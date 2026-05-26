@@ -19,7 +19,7 @@ export const environment = {
       scheme: 'http',
       path: '',
       channelType: 'public',
-      channel: 'tracking',
+      channel: 'tracking.{unitId}',
       event: 'vehicle.location.updated',
       namespace: false,
       enabledTransports: [
@@ -53,8 +53,8 @@ export const environment = {
       scheme: 'http',
       path: '',
       channelType: 'public',
-      channel: 'tracking.units.{unitId}',
-      event: 'UnitLocationUpdated',
+      channel: 'tracking.{unitId}',
+      event: 'vehicle.location.updated',
       namespace: false,
       enabledTransports: [
     "ws",
