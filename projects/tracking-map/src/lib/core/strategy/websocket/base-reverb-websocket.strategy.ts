@@ -1,9 +1,6 @@
 import { ClientType } from '../../enums/provider_type';
 import { TrackingPosition, TrackingPositionPayload } from '../../models/tracking_position';
-import {
-  normalizeTrackingUnitInput,
-  TrackingUnitInput,
-} from '../../models/tracking_unit_reference';
+import { TrackingUnitInput } from '../../models/tracking_unit_reference';
 import { WebsocketConfig, WebsocketEnvironmentConfig } from '../../models/websocket_config';
 import { WebsocketStrategy } from '../../contracts/websocket-strategy.interface';
 
@@ -14,7 +11,6 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
 
   getConfig(unit: TrackingUnitInput): WebsocketConfig {
     const config = this.getEnvironmentConfig();
-    const unitReference = normalizeTrackingUnitInput(unit);
 
     return {
       provider: this.provider,
@@ -26,7 +22,7 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
       path: config.path,
       namespace: config.namespace ?? false,
       channelType: config.channelType,
-      channel: this.resolveChannel(config.channel, unitReference.unitId),
+      channel: this.resolveChannel(config.channel, unit),
       event: `.${config.event}`,
       enabledTransports: config.enabledTransports,
       auth: {
@@ -48,10 +44,9 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
       return null;
     }
 
-    const unitReference = normalizeTrackingUnitInput(unit);
     const lat = Number(payload.lat);
     const lng = Number(payload.lng);
-    const payloadUnitId = payload.unit_id ?? unitReference.unitId;
+    const payloadUnitId = payload.unit_id ?? unit;
     const receivedAt = Date.now();
 
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
@@ -77,8 +72,7 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
   }
 
   shouldHandle(position: TrackingPosition, unit: TrackingUnitInput): boolean {
-    const unitReference = normalizeTrackingUnitInput(unit);
-    return String(position.unit_id) === String(unitReference.unitId);
+    return String(position.unit_id) === String(unit);
   }
 
   protected resolveChannel(channelTemplate: string, unitId: string | number): string {

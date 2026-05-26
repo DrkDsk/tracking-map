@@ -1,10 +1,6 @@
 import { computed, inject, Injectable, Injector, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { TrackingPosition } from '../../models/tracking_position';
-import {
-  normalizeTrackingUnitInput,
-  TrackingUnitInput,
-} from '../../models/tracking_unit_reference';
 
 @Injectable({
   providedIn: 'root',
@@ -22,13 +18,6 @@ export class UnitStateService {
   upsert(position: TrackingPosition): void {
     const next = new Map(this.unitsState());
     next.set(this.resolveKey(position.unit_id), position);
-    this.unitsState.set(next);
-  }
-
-  remove(unit: TrackingUnitInput): void {
-    const unitReference = normalizeTrackingUnitInput(unit);
-    const next = new Map(this.unitsState());
-    next.delete(this.resolveKey(unitReference.unitId));
     this.unitsState.set(next);
   }
 

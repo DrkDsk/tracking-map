@@ -12,11 +12,7 @@ import {
 } from 'rxjs';
 import { ClientType } from '../../enums/provider_type';
 import { TrackingPosition, TrackingPositionPayload } from '../../models/tracking_position';
-import {
-  normalizeTrackingUnitInput,
-  TrackingUnitInput,
-  TrackingUnitReference,
-} from '../../models/tracking_unit_reference';
+import { TrackingUnitInput } from '../../models/tracking_unit_reference';
 import { WebsocketConfig } from '../../models/websocket_config';
 import { RealtimeTrackingRepository } from '../../repositories/realtime_tracking.repository';
 import { TrackingSocketService } from './tracking-socket.service';
@@ -24,7 +20,7 @@ import { TrackingSocketService } from './tracking-socket.service';
 interface ActiveRealtimeSubscription {
   key: string;
   provider: ClientType;
-  unit: TrackingUnitReference;
+  unit: TrackingUnitInput;
   config: WebsocketConfig;
   subscription: Subscription;
   refCount: number;
@@ -47,13 +43,11 @@ export class RealtimeTrackingService {
     .pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   trackUnits(provider: ClientType, units: TrackingUnitInput[]): Observable<TrackingPosition> {
-    const normalizedUnits = units.map((unit) => normalizeTrackingUnitInput(unit));
-
-    normalizedUnits.forEach((unit) => {
+    units.forEach((unit) => {
       this.ensureUnitSubscription(provider, unit);
     });
 
-    const unitKeys = new Set(normalizedUnits.map((unit) => this.buildKey(provider, unit.unitId)));
+    const unitKeys = new Set(units.map((unit) => this.buildKey(provider, unit)));
 
     return this.positions$.pipe(
       filter((position) => unitKeys.has(this.buildKey(provider, position.unit_id))),
@@ -75,8 +69,8 @@ export class RealtimeTrackingService {
     return this.trackingRepository.getConfig(provider, unit);
   }
 
-  private ensureUnitSubscription(provider: ClientType, unit: TrackingUnitReference): void {
-    const key = this.buildKey(provider, unit.unitId);
+  private ensureUnitSubscription(provider: ClientType, unit: TrackingUnitInput): void {
+    const key = this.buildKey(provider, unit);
     const activeSubscriptions = new Map(this.activeSubscriptionsState());
     const existingSubscription = activeSubscriptions.get(key);
 
