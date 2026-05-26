@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { WebsocketStrategyResolver } from '../strategy/websocket-strategy.resolver';
 import { ClientType } from '../enums/provider_type';
 import { TrackingPosition } from '../models/tracking_position';
+import { TrackingUnitInput } from '../models/tracking_unit_reference';
 import { WebsocketConfig } from '../models/websocket_config';
 
 @Injectable({
@@ -10,19 +11,19 @@ import { WebsocketConfig } from '../models/websocket_config';
 export class RealtimeTrackingRepository {
   private resolver = inject(WebsocketStrategyResolver);
 
-  getConfig(provider: ClientType, unitId: string | number): WebsocketConfig {
-    return this.resolver.resolve(provider).getConfig(unitId);
+  getConfig(provider: ClientType, unit: TrackingUnitInput): WebsocketConfig {
+    return this.resolver.resolve(provider).getConfig(unit);
   }
 
   parsePosition(
     provider: ClientType,
     payload: unknown,
-    unitId: string | number,
+    unit: TrackingUnitInput,
   ): TrackingPosition | null {
-    return this.resolver.resolve(provider).parse(payload, unitId);
+    return this.resolver.resolve(provider).parse(payload, unit);
   }
 
-  shouldHandle(provider: ClientType, position: TrackingPosition, unitId: string | number): boolean {
-    return this.resolver.resolve(provider).shouldHandle(position, unitId);
+  shouldHandle(provider: ClientType, position: TrackingPosition, unit: TrackingUnitInput): boolean {
+    return this.resolver.resolve(provider).shouldHandle(position, unit);
   }
 }
