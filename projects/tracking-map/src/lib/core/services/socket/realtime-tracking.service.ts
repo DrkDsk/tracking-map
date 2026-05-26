@@ -44,7 +44,7 @@ export class RealtimeTrackingService {
 
   trackUnits(provider: ClientType, units: TrackingUnitInput[]): Observable<TrackingPosition> {
     units.forEach((unit) => {
-      this.ensureUnitSubscription(provider, unit);
+      this.subscription(provider, unit);
     });
 
     const unitKeys = new Set(units.map((unit) => this.buildKey(provider, unit)));
@@ -69,7 +69,7 @@ export class RealtimeTrackingService {
     return this.trackingRepository.getConfig(provider, unit);
   }
 
-  private ensureUnitSubscription(provider: ClientType, unit: TrackingUnitInput): void {
+  private subscription(provider: ClientType, unit: TrackingUnitInput): void {
     const key = this.buildKey(provider, unit);
     const activeSubscriptions = new Map(this.activeSubscriptionsState());
     const existingSubscription = activeSubscriptions.get(key);
