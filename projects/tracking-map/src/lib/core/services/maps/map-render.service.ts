@@ -123,10 +123,10 @@ export class MapRenderService {
         source: this.unitsSourceId,
         paint: {
           'circle-radius': ['case', ['boolean', ['get', 'isInterpolated'], false], 11, 9],
-          'circle-color': '#0f766e',
-          'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 2,
-          'circle-opacity': 0.95,
+          'circle-color': '#5292e6',
+          'circle-stroke-color': '#5292E661',
+          'circle-stroke-width': 12,
+          'circle-opacity': 1,
         },
       });
     }
