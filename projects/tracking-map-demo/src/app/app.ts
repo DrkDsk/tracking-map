@@ -9,6 +9,6 @@ import { TrackingVideoComponent } from 'tracking-video';
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly unitId = 141;
-  protected readonly trackedUnitIds = [141, 142];
+  protected readonly unitId = 280;
+  protected readonly trackedUnitIds = [280, 281];
 }
