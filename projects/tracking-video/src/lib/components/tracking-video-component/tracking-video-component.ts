@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
@@ -7,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   QueryList,
+  signal,
   ViewChildren,
 } from '@angular/core';
 import { StreamRepository } from '../../core/repositories/stream-repository';
@@ -16,7 +18,7 @@ import flvjs from 'flv.js';
 
 @Component({
   selector: 'tracking-video-component',
-  imports: [],
+  standalone: true,
   templateUrl: './tracking-video-component.html',
   styleUrl: './tracking-video-component.css',
 })
@@ -32,13 +34,16 @@ export class TrackingVideoComponent implements OnInit, OnDestroy, AfterViewInit 
 
   @ViewChildren('videoPlayer')
   videoRefs!: QueryList<ElementRef<HTMLVideoElement>>;
-  streamUrls: string[] = [];
+  streams = signal<string[]>([]);
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.repositorySubscription = this.apiRepository
       .getStreamUrls(this.provider(), this.unitId())
       .subscribe((response) => {
-        this.streamUrls.push(...response.urls);
+        this.streams.set([...response]);
+        this.cdr.detectChanges();
       });
   }
 
@@ -47,16 +52,20 @@ export class TrackingVideoComponent implements OnInit, OnDestroy, AfterViewInit 
   }
 
   ngAfterViewInit(): void {
+    this.videoRefs.changes.subscribe(() => {
+      this.initPlayersIfReady();
+    });
+
     this.initPlayersIfReady();
   }
 
   private initPlayersIfReady(): void {
-    if (!this.streamUrls.length) return;
+    if (!this.streams().length) return;
     if (this.playersInitialized) return;
 
     this.playersInitialized = true;
 
-    this.streamUrls.forEach((stream, index) => {
+    this.streams().forEach((stream, index) => {
       this.destroyPlayer(index);
       this.createFlvPlayer(index, stream);
     });
@@ -112,11 +121,16 @@ export class TrackingVideoComponent implements OnInit, OnDestroy, AfterViewInit 
     videoEl.playsInline = true;
 
     const player = flvjs.createPlayer(
-      { type: 'flv', url, isLive: true, cors: true },
       {
-        enableStashBuffer: true,
-        stashInitialSize: 128 * 1024,
+        type: 'flv',
+        url,
+        isLive: true,
+        cors: true,
+      },
+      {
+        enableStashBuffer: false,
         lazyLoad: false,
+        autoCleanupSourceBuffer: true,
       },
     );
 
