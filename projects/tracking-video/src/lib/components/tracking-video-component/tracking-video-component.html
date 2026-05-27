@@ -1,1 +1,11 @@
-<p>tracking-video-component works!</p>
+@for (stream of streamUrls; track stream) {
+
+  <video
+    #videoPlayer
+    controls
+    preload="none"
+    autoplay
+    muted
+    playsinline
+  ></video>
+}
