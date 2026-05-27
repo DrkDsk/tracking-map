@@ -14,7 +14,10 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular/build:ng-packagr",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tracking-map/ng-package.json"
+          },
           "configurations": {
             "production": {
               "tsConfig": "projects/tracking-sdk/tsconfig.lib.prod.json"
@@ -26,7 +29,7 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:unit-test",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/tracking-sdk/tsconfig.spec.json"
           }
@@ -40,7 +43,10 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular/build:ng-packagr",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tracking-map/ng-package.json"
+          },
           "configurations": {
             "production": {
               "tsConfig": "projects/tracking-map/tsconfig.lib.prod.json"
@@ -52,7 +58,7 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:unit-test",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/tracking-map/tsconfig.spec.json"
           }
@@ -67,14 +73,21 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular/build:application",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "outputPath": "dist/tracking-map-demo",
             "browser": "projects/tracking-map-demo/src/main.ts",
+            "polyfills": ["zone.js"],
+            "index": "projects/tracking-map-demo/src/index.html",
             "tsConfig": "projects/tracking-map-demo/tsconfig.app.json",
             "assets": [
+              "projects/tracking-map-demo/src/favicon.ico",
+              "projects/tracking-map-demo/src/assets",
+              "projects/tracking-map-demo/src/.htaccess",
               {
                 "glob": "**/*",
-                "input": "projects/tracking-map-demo/public"
+                "input": "projects/tracking-map-demo/public",
+                "output": "/"
               }
             ],
             "styles": ["projects/tracking-map-demo/src/styles.css"]
@@ -104,7 +117,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "tracking-map-demo:build:production"
@@ -116,7 +129,7 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:unit-test"
+          "builder": "@angular-devkit/build-angular:karma"
         }
       }
     },
@@ -127,7 +140,10 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular/build:ng-packagr",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/tracking-map/ng-package.json"
+          },
           "configurations": {
             "production": {
               "tsConfig": "projects/tracking-video/tsconfig.lib.prod.json"
@@ -139,7 +155,7 @@
           "defaultConfiguration": "production"
         },
         "test": {
-          "builder": "@angular/build:unit-test",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/tracking-video/tsconfig.spec.json"
           }
