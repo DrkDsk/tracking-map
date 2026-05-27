@@ -6,12 +6,11 @@
     "@angular/core": "^21.1.0"
   },
   "dependencies": {
-    "tslib": "^2.3.0",
-    "@maplibre/ngx-maplibre-gl": "^21.0.2",
-    "maplibre-gl": "^5.24.0",
     "laravel-echo": "^2.3.4",
+    "maplibre-gl": "^5.24.0",
     "pusher-js": "^8.5.0",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "tslib": "^2.3.0"
   },
   "sideEffects": false,
   "main": "../../dist/tracking-map/fesm2022/drkdsk-tracking-map.mjs",
