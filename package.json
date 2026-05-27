@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "config": "node ./projects/tracking-map/config/set-env.config.js",
+    "config:video": "node ./projects/tracking-video/config/set-env.config.js",
     "dev": "concurrently \"ng build tracking-map --watch\" \"ng serve tracking-map-demo\"",
     "build:lib": "npm run config && ng build tracking-map",
+    "build:video": "npm run config:video && ng build tracking-video",
     "start": "ng serve",
     "build": "ng build tracking-map",
     "watch": "ng build --watch --configuration development",
@@ -22,6 +24,7 @@
     "@angular/router": "^21.2.0",
     "@maplibre/ngx-maplibre-gl": "^21.0.2",
     "dotenv": "^17.4.2",
+    "flv.js": "^1.6.2",
     "laravel-echo": "^2.3.4",
     "maplibre-gl": "^5.24.0",
     "pusher-js": "^8.5.0",

@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { LiveMapComponent } from 'tracking-map';
+import { TrackingVideoComponent } from 'tracking-video';
 
 @Component({
   selector: 'app-root',
-  imports: [LiveMapComponent],
+  imports: [LiveMapComponent, TrackingVideoComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })

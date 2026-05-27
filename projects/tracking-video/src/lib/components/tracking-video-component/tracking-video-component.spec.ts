@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReplyMapComponent } from './reply-map-component';
+import { TrackingVideoComponent } from './tracking-video-component';
 
-describe('ReplyMapComponent', () => {
-  let component: ReplyMapComponent;
-  let fixture: ComponentFixture<ReplyMapComponent>;
+describe('TrackingVideoComponent', () => {
+  let component: TrackingVideoComponent;
+  let fixture: ComponentFixture<TrackingVideoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReplyMapComponent],
+      imports: [TrackingVideoComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ReplyMapComponent);
+    fixture = TestBed.createComponent(TrackingVideoComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

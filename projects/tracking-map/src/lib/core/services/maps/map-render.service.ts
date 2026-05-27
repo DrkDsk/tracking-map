@@ -1,8 +1,62 @@
 import { Injectable } from '@angular/core';
-import { GeoJSONSource, Map, Popup } from 'maplibre-gl';
+import { Feature, FeatureCollection, LineString, Point } from 'geojson';
+import { GeoJSONSource, Map, Popup, type CircleLayerSpecification } from 'maplibre-gl';
 import { TrackingRoute } from '../../models/tracking_route';
-import { FeatureCollection, LineString, Point } from 'geojson';
 import { TrackingPosition } from '../../models/tracking_position';
+
+interface RouteProperties {
+  id: string;
+  color: string;
+}
+
+interface UnitProperties {
+  unitId: string;
+  provider: string;
+  label: string;
+  speed: number;
+  angle: number;
+  acc: string;
+  gpsTime: string;
+  uniqueId: string;
+  unitDeviceId: string;
+  isInterpolated: boolean;
+  lat: string;
+  lng: string;
+}
+
+interface RouteEndpointProperties {
+  routeId: string;
+  color: string;
+  role: 'start' | 'end';
+}
+
+const TRACKING_RING_COLORS = {
+  core: '#5DA9FF',
+  ring: '#7CC0FF',
+  glow: '#BFE1FF',
+  glowTransparent: 'rgba(191, 225, 255, 0.22)',
+} as const;
+
+const TRACKING_RING_RADIUS = {
+  glow: {
+    normal: 18,
+    interpolated: 20,
+  },
+  ring: {
+    normal: 9,
+    interpolated: 11,
+  },
+  core: {
+    normal: 4.8,
+    interpolated: 5.6,
+  },
+} as const;
+
+const ENDPOINT_RING_RADIUS = {
+  glow: 16,
+  ring: 8,
+  core: 4.4,
+} as const;
 
 @Injectable({
   providedIn: 'root',
@@ -12,25 +66,36 @@ export class MapRenderService {
 
   private readonly sourceId = 'routes-source';
   private readonly layerId = 'routes-layer';
+
+  private readonly routeStartSourceId = 'route-start-source';
+  private readonly routeEndSourceId = 'route-end-source';
+  private readonly routeStartGlowLayerId = 'route-start-glow-layer';
+  private readonly routeStartRingLayerId = 'route-start-ring-layer';
+  private readonly routeStartCoreLayerId = 'route-start-core-layer';
+  private readonly routeEndGlowLayerId = 'route-end-glow-layer';
+  private readonly routeEndRingLayerId = 'route-end-ring-layer';
+  private readonly routeEndCoreLayerId = 'route-end-core-layer';
+
   private readonly unitsSourceId = 'units-source';
-  private readonly unitsLayerId = 'units-layer';
+  private readonly unitsRingLayerId = 'units-ring-layer';
+  private readonly unitsCoreLayerId = 'units-core-layer';
   private readonly unitsLabelLayerId = 'units-label-layer';
 
-  initialize(map: Map) {
+  initialize(map: Map): void {
     this.map = map;
   }
 
-  private buildFeatureCollection(routes: TrackingRoute[]): FeatureCollection<LineString> {
+  private buildFeatureCollection(
+    routes: TrackingRoute[],
+  ): FeatureCollection<LineString, RouteProperties> {
     return {
       type: 'FeatureCollection',
       features: routes.map((route) => ({
         type: 'Feature',
-
         properties: {
           id: route.id,
           color: route.color,
         },
-
         geometry: {
           type: 'LineString',
           coordinates: route.coordinates,
@@ -39,32 +104,61 @@ export class MapRenderService {
     };
   }
 
-  render(routes: TrackingRoute[]) {
+  private buildRouteEndpointFeatureCollection(
+    routes: TrackingRoute[],
+    role: 'start' | 'end',
+  ): FeatureCollection<Point, RouteEndpointProperties> {
+    return {
+      type: 'FeatureCollection',
+      features: routes
+        .filter((route) => route.coordinates.length > 0)
+        .map((route) => this.buildRouteEndpointFeature(route, role)),
+    };
+  }
+
+  private buildRouteEndpointFeature(
+    route: TrackingRoute,
+    role: 'start' | 'end',
+  ): Feature<Point, RouteEndpointProperties> {
+    const coordinates =
+      role === 'start' ? route.coordinates[0] : route.coordinates[route.coordinates.length - 1];
+
+    return {
+      type: 'Feature',
+      properties: {
+        routeId: route.id,
+        color: route.color,
+        role,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates,
+      },
+    };
+  }
+
+  render(routes: TrackingRoute[]): void {
     const data = this.buildFeatureCollection(routes);
 
-    // SOURCE
     if (!this.map.getSource(this.sourceId)) {
       this.map.addSource(this.sourceId, {
         type: 'geojson',
-        data: data,
+        data,
       });
     } else {
       const source = this.map.getSource(this.sourceId) as GeoJSONSource;
       source.setData(data);
     }
 
-    // LAYER
     if (!this.map.getLayer(this.layerId)) {
       this.map.addLayer({
         id: this.layerId,
         type: 'line',
         source: this.sourceId,
-
         layout: {
           'line-cap': 'round',
           'line-join': 'round',
         },
-
         paint: {
           'line-color': ['get', 'color'],
           'line-width': ['coalesce', ['get', 'width'], 4],
@@ -73,6 +167,95 @@ export class MapRenderService {
       });
       this.registerRouteEvents();
     }
+
+    this.syncRouteEndpointSource(this.routeStartSourceId, routes, 'start');
+    this.syncRouteEndpointSource(this.routeEndSourceId, routes, 'end');
+    this.ensureRouteEndpointLayers();
+  }
+
+  private syncRouteEndpointSource(
+    sourceId: string,
+    routes: TrackingRoute[],
+    role: 'start' | 'end',
+  ): void {
+    const data = this.buildRouteEndpointFeatureCollection(routes, role);
+
+    if (!this.map.getSource(sourceId)) {
+      this.map.addSource(sourceId, {
+        type: 'geojson',
+        data,
+      });
+      return;
+    }
+
+    const source = this.map.getSource(sourceId) as GeoJSONSource;
+    source.setData(data);
+  }
+
+  private ensureRouteEndpointLayers(): void {
+    this.ensureCircleLayer(
+      this.createEndpointGlowLayer(this.routeStartGlowLayerId, this.routeStartSourceId),
+    );
+    this.ensureCircleLayer(
+      this.createEndpointRingLayer(this.routeStartRingLayerId, this.routeStartSourceId),
+    );
+    this.ensureCircleLayer(
+      this.createEndpointCoreLayer(this.routeStartCoreLayerId, this.routeStartSourceId),
+    );
+
+    this.ensureCircleLayer(
+      this.createEndpointGlowLayer(this.routeEndGlowLayerId, this.routeEndSourceId),
+    );
+    this.ensureCircleLayer(
+      this.createEndpointRingLayer(this.routeEndRingLayerId, this.routeEndSourceId),
+    );
+    this.ensureCircleLayer(
+      this.createEndpointCoreLayer(this.routeEndCoreLayerId, this.routeEndSourceId),
+    );
+  }
+
+  private createEndpointGlowLayer(id: string, source: string): CircleLayerSpecification {
+    return {
+      id,
+      type: 'circle',
+      source,
+      paint: {
+        'circle-radius': ENDPOINT_RING_RADIUS.glow,
+        'circle-color': 'rgba(191, 225, 255, 0.18)',
+        'circle-blur': 0.85,
+        'circle-opacity': 1,
+      },
+    };
+  }
+
+  private createEndpointRingLayer(id: string, source: string): CircleLayerSpecification {
+    return {
+      id,
+      type: 'circle',
+      source,
+      paint: {
+        'circle-radius': ENDPOINT_RING_RADIUS.ring,
+        'circle-color': 'rgba(0, 0, 0, 0)',
+        'circle-stroke-color': TRACKING_RING_COLORS.ring,
+        'circle-stroke-width': 2,
+        'circle-opacity': 0.92,
+      },
+    };
+  }
+
+  private createEndpointCoreLayer(id: string, source: string): CircleLayerSpecification {
+    return {
+      id,
+      type: 'circle',
+      source,
+      paint: {
+        'circle-radius': ENDPOINT_RING_RADIUS.core,
+        'circle-color': TRACKING_RING_COLORS.core,
+        'circle-stroke-color': TRACKING_RING_COLORS.glow,
+        'circle-stroke-width': 1.2,
+        'circle-opacity': 1,
+      },
+    };
   }
 
   private registerRouteEvents(): void {
@@ -99,7 +282,7 @@ export class MapRenderService {
     });
   }
 
-  renderUnits(positions: TrackingPosition[]) {
+  renderUnits(positions: TrackingPosition[]): void {
     if (!this.map) {
       return;
     }
@@ -116,20 +299,8 @@ export class MapRenderService {
       source.setData(data);
     }
 
-    if (!this.map.getLayer(this.unitsLayerId)) {
-      this.map.addLayer({
-        id: this.unitsLayerId,
-        type: 'circle',
-        source: this.unitsSourceId,
-        paint: {
-          'circle-radius': ['case', ['boolean', ['get', 'isInterpolated'], false], 11, 9],
-          'circle-color': '#0f766e',
-          'circle-stroke-color': '#ffffff',
-          'circle-stroke-width': 2,
-          'circle-opacity': 0.95,
-        },
-      });
-    }
+    this.ensureCircleLayer(this.createUnitRingLayer());
+    this.ensureCircleLayer(this.createRealTimeLayerLayer());
 
     if (!this.map.getLayer(this.unitsLabelLayerId)) {
       this.map.addLayer({
@@ -153,6 +324,40 @@ export class MapRenderService {
     }
   }
 
+  private createUnitRingLayer(): CircleLayerSpecification {
+    return {
+      id: this.unitsRingLayerId,
+      type: 'circle',
+      source: this.unitsSourceId,
+      paint: {
+        'circle-radius': this.buildTrackingRadiusExpression(
+          TRACKING_RING_RADIUS.ring.normal,
+          TRACKING_RING_RADIUS.ring.interpolated,
+        ),
+        'circle-color': 'rgba(0, 0, 0, 0)',
+        'circle-stroke-color': TRACKING_RING_COLORS.ring,
+        'circle-stroke-width': 20,
+        'circle-opacity': 1,
+        'circle-stroke-opacity': 0.4,
+      },
+    };
+  }
+
+  private createRealTimeLayerLayer(): CircleLayerSpecification {
+    return {
+      id: this.unitsCoreLayerId,
+      type: 'circle',
+      source: this.unitsSourceId,
+      paint: {
+        'circle-radius': this.buildTrackingRadiusExpression(11, 9),
+        'circle-color': TRACKING_RING_COLORS.core,
+        'circle-stroke-color': TRACKING_RING_COLORS.glow,
+        'circle-stroke-width': 2,
+        'circle-opacity': 1,
+      },
+    };
+  }
+
   clearUnits(): void {
     if (!this.map || !this.map.getSource(this.unitsSourceId)) {
       return;
@@ -174,7 +379,9 @@ export class MapRenderService {
     });
   }
 
-  private buildUnitsFeatureCollection(positions: TrackingPosition[]): FeatureCollection<Point> {
+  private buildUnitsFeatureCollection(
+    positions: TrackingPosition[],
+  ): FeatureCollection<Point, UnitProperties> {
     return {
       type: 'FeatureCollection',
       features: positions.map((position) => ({
@@ -201,8 +408,26 @@ export class MapRenderService {
     };
   }
 
+  private buildTrackingRadiusExpression(
+    normalRadius: number,
+    interpolatedRadius: number,
+  ): ['case', ['boolean', ['get', 'isInterpolated'], false], number, number] {
+    return [
+      'case',
+      ['boolean', ['get', 'isInterpolated'], false],
+      interpolatedRadius,
+      normalRadius,
+    ];
+  }
+
+  private ensureCircleLayer(layer: CircleLayerSpecification): void {
+    if (!this.map.getLayer(layer.id)) {
+      this.map.addLayer(layer);
+    }
+  }
+
   private registerUnitEvents(): void {
-    this.map.on('click', this.unitsLayerId, (e) => {
+    this.map.on('click', this.unitsCoreLayerId, (e) => {
       const feature = e.features?.[0];
 
       if (!feature) {

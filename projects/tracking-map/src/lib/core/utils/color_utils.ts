@@ -14,6 +14,7 @@ export class ColorUtils {
   ];
 
   public getRandomColor(index: number): string {
-    return this.routeColors[index % this.routeColors.length];
+    return '#FBD3B6';
+    //return this.routeColors[index % this.routeColors.length];
   }
 }

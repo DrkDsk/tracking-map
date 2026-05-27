@@ -1,6 +1,7 @@
 import {
   Component,
   DestroyRef,
+  OnInit,
   OnChanges,
   OnDestroy,
   SimpleChanges,
@@ -10,6 +11,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MapComponent } from '@maplibre/ngx-maplibre-gl';
 import { LngLatLike, Map as MapLibreMap } from 'maplibre-gl';
+import type { StyleSpecification } from 'maplibre-gl';
 import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
 import { ClientType } from '../../core/types/provider_type';
@@ -22,6 +24,12 @@ import { UnitStateService } from '../../core/services/socket/unit-state.service'
 import { MarkerAnimationService } from '../../core/services/socket/marker-animation.service';
 import { TrackingSocketService } from '../../core/services/socket/tracking-socket.service';
 import { ReverbSocketClient } from '../../core/services/socket/reverb-socket.client';
+import { createNeonMapStyle } from '../../core/utils/neon_map_style';
+import hybridStyle from '../../../assets/map-styles/style.json';
+
+const neonStyle: StyleSpecification = createNeonMapStyle(
+  hybridStyle as unknown as StyleSpecification,
+);
 
 @Component({
   selector: 'live-map-component',
@@ -37,7 +45,7 @@ import { ReverbSocketClient } from '../../core/services/socket/reverb-socket.cli
     ReverbSocketClient,
   ],
 })
-export class LiveMapComponent implements OnChanges, OnDestroy {
+export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
   private routingService = inject(RoutingService);
   private mapRenderService = inject(MapRenderService);
   private trackingRepository = inject(TrackingRepository);
@@ -53,7 +61,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
   private mapLoaded = false;
   private hasFocusedLiveUnit = false;
 
-  mapStyle = input('https://api.maptiler.com/maps/hybrid-v4/style.json?key=NOlJEA2Zes5006iTaZav');
+  mapStyle = input(neonStyle);
 
   zoom = input<[number]>([1]);
 
@@ -76,7 +84,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
 
   center: [number, number] = [-102.5528, 23.6345];
 
-  constructor() {
+  ngOnInit(): void {
     this.unitsSubscription = this.unitStateService.positions$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((positions) => {
