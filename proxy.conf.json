@@ -1,8 +1,0 @@
-{
-  "/ftcloud": {
-    "target": "https://exp-prd.streamax.com:20002",
-    "secure": true,
-    "changeOrigin": true,
-    "pathRewrite": { "^/ftcloud": "" }
-  }
-}
