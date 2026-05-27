@@ -1,17 +1,19 @@
 import {
+  AfterViewInit,
   Component,
   DestroyRef,
+  ElementRef,
   OnInit,
   OnChanges,
   OnDestroy,
   SimpleChanges,
+  ViewChild,
   inject,
   input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MapComponent } from '@maplibre/ngx-maplibre-gl';
-import { LngLatLike, Map as MapLibreMap } from 'maplibre-gl';
-import type { StyleSpecification } from 'maplibre-gl';
+import { Map as MapLibreMap } from 'maplibre-gl';
+import type { LngLatLike, StyleSpecification } from 'maplibre-gl';
 import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
 import { ClientType } from '../../core/types/provider_type';
@@ -34,7 +36,7 @@ const neonStyle: StyleSpecification = createNeonMapStyle(
 @Component({
   selector: 'live-map-component',
   standalone: true,
-  imports: [MapComponent],
+  imports: [],
   templateUrl: './live-map-component.html',
   styleUrl: './live-map-component.css',
   providers: [
@@ -45,7 +47,7 @@ const neonStyle: StyleSpecification = createNeonMapStyle(
     ReverbSocketClient,
   ],
 })
-export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
+export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private routingService = inject(RoutingService);
   private mapRenderService = inject(MapRenderService);
   private trackingRepository = inject(TrackingRepository);
@@ -58,8 +60,12 @@ export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
   private historySubscription?: Subscription;
   private realtimeSubscription?: Subscription;
   private unitsSubscription?: Subscription;
+  private map?: MapLibreMap;
   private mapLoaded = false;
   private hasFocusedLiveUnit = false;
+
+  @ViewChild('mapContainer', { static: true })
+  private mapContainer!: ElementRef<HTMLDivElement>;
 
   mapStyle = input(neonStyle);
 
@@ -101,6 +107,19 @@ export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
       });
   }
 
+  ngAfterViewInit(): void {
+    const map = new MapLibreMap({
+      container: this.mapContainer.nativeElement,
+      style: this.mapStyle(),
+      zoom: this.resolveZoom(),
+      center: this.center,
+      maxBounds: this.mexicoBounds(),
+    });
+
+    this.map = map;
+    map.on('load', () => this.onMapLoad(map));
+  }
+
   onMapLoad(map: MapLibreMap) {
     this.mapLoaded = true;
     this.mapRenderService.initialize(map);
@@ -111,6 +130,8 @@ export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.mapLoaded) {
       return;
     }
+
+    this.syncMapInputs(changes);
 
     if (
       changes['provider'] ||
@@ -128,6 +149,9 @@ export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
     this.historySubscription?.unsubscribe();
     this.unitsSubscription?.unsubscribe();
     this.unitStateService.clear();
+    this.map?.remove();
+    this.map = undefined;
+    this.mapLoaded = false;
   }
 
   private reloadData(): void {
@@ -210,5 +234,27 @@ export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     return Array.from(uniqueCandidates.values());
+  }
+
+  private syncMapInputs(changes: SimpleChanges): void {
+    if (!this.map) {
+      return;
+    }
+
+    if (changes['mapStyle']) {
+      this.map.setStyle(this.mapStyle());
+    }
+
+    if (changes['zoom']) {
+      this.map.setZoom(this.resolveZoom());
+    }
+
+    if (changes['mexicoBounds']) {
+      this.map.setMaxBounds(this.mexicoBounds());
+    }
+  }
+
+  private resolveZoom(): number {
+    return this.zoom()[0];
   }
 }
