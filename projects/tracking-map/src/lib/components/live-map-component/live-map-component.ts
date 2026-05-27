@@ -6,6 +6,7 @@ import {
   SimpleChanges,
   inject,
   input,
+  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MapComponent } from '@maplibre/ngx-maplibre-gl';
@@ -22,6 +23,7 @@ import { UnitStateService } from '../../core/services/socket/unit-state.service'
 import { MarkerAnimationService } from '../../core/services/socket/marker-animation.service';
 import { TrackingSocketService } from '../../core/services/socket/tracking-socket.service';
 import { ReverbSocketClient } from '../../core/services/socket/reverb-socket.client';
+import hybridStyle from '../../../assets/map-styles/style.json';
 
 @Component({
   selector: 'live-map-component',
@@ -37,7 +39,7 @@ import { ReverbSocketClient } from '../../core/services/socket/reverb-socket.cli
     ReverbSocketClient,
   ],
 })
-export class LiveMapComponent implements OnChanges, OnDestroy {
+export class LiveMapComponent implements OnInit, OnChanges, OnDestroy {
   private routingService = inject(RoutingService);
   private mapRenderService = inject(MapRenderService);
   private trackingRepository = inject(TrackingRepository);
@@ -76,7 +78,7 @@ export class LiveMapComponent implements OnChanges, OnDestroy {
 
   center: [number, number] = [-102.5528, 23.6345];
 
-  constructor() {
+  ngOnInit(): void {
     this.unitsSubscription = this.unitStateService.positions$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((positions) => {
