@@ -1,5 +1,5 @@
 import { ApiStreamService } from '../contracts/api_stream.service';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { StreamVideoResponse } from '../models/stream_video_response';
 import { inject, Injectable } from '@angular/core';
 import { ApiClient } from '../http/api-client.service';
@@ -13,7 +13,12 @@ export class ApiStreamTransmalService implements ApiStreamService {
 
   private readonly baseUrl = environment.providers.transmal;
 
-  getStreamUrls(unitId: string | number): Observable<StreamVideoResponse> {
-    return this.api.get<StreamVideoResponse>(this.baseUrl, `/api/units/${unitId}}/stream-video`);
+  getStreamUrls(unitId: string | number): Observable<string[]> {
+    const response = this.api.get<StreamVideoResponse>(
+      this.baseUrl,
+      `/api/units/${unitId}}/stream-video`,
+    );
+
+    return response.pipe(map((response) => response.urls));
   }
 }
