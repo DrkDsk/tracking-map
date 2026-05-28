@@ -445,6 +445,7 @@ export class MapRenderService {
   <div style="color:#000000; font-family: system-ui; font-size: 12px;">
     <strong style="color:#000000;">${properties['label']}</strong>
 
+    <!-- <div>Proveedor: ${properties['provider']}</div> -->
     <div>Latitud: ${properties['lat']}</div>
     <div>Longitude: ${properties['lng']}</div>
     <div>Velocidad: ${properties['speed']} km/h</div>
