@@ -389,7 +389,7 @@ export class MapRenderService {
         properties: {
           unitId: String(position.unit_id),
           provider: position.provider,
-          label: `Unit ${position.unit_id}`,
+          label: `Unidad ${position.unit_id}`,
           speed: position.speed,
           angle: position.angle,
           acc: position.acc ? 'ON' : 'OFF',
@@ -445,13 +445,10 @@ export class MapRenderService {
   <div style="color:#000000; font-family: system-ui; font-size: 12px;">
     <strong style="color:#000000;">${properties['label']}</strong>
 
-    <div>Provider: ${properties['provider']}</div>
-    <div>Lat: ${properties['lat']}</div>
-    <div>Lng: ${properties['lng']}</div>
-    <div>Speed: ${properties['speed']}</div>
-    <div>Angle: ${properties['angle']}</div>
-    <div>ACC: ${properties['acc']}</div>
-    <div>GPS Time: ${properties['gpsTime']}</div>
+    <div>Proveedor: ${properties['provider']}</div>
+    <div>Latitud: ${properties['lat']}</div>
+    <div>Longitude: ${properties['lng']}</div>
+    <div>Velocidad: ${properties['speed']} km/h</div>
   </div>
 `,
         )
