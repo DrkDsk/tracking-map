@@ -389,7 +389,7 @@ export class MapRenderService {
         properties: {
           unitId: String(position.unit_id),
           provider: position.provider,
-          label: `Unidad ${position.unit_id}`,
+          label: `Unidad: ${position.unit_number}`,
           speed: position.speed,
           angle: position.angle,
           acc: position.acc ? 'ON' : 'OFF',

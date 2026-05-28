@@ -10,6 +10,7 @@ export interface TrackingPositionPayload {
   angle: number;
   acc: boolean;
   gps_time: string;
+  unit_number: string;
 }
 
 export type TrackingPositionSource = 'websocket' | 'animation';
