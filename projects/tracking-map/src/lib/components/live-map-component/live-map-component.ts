@@ -12,7 +12,7 @@ import {
   input,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Map as MapLibreMap } from 'maplibre-gl';
+import maplibregl, { Map as MapLibreMap } from 'maplibre-gl';
 import type { LngLatLike, StyleSpecification } from 'maplibre-gl';
 import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
@@ -116,6 +116,13 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
       maxBounds: this.mexicoBounds(),
       attributionControl: false,
     });
+
+    map.addControl(
+      new maplibregl.AttributionControl({
+        compact: true,
+      }),
+      'bottom-right',
+    );
 
     this.map = map;
     map.on('load', () => this.onMapLoad(map));
