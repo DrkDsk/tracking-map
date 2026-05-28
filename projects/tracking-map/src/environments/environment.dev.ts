@@ -2,16 +2,16 @@
 export const environment = {
   production: false,
   providers : {
-    servidiesel : 'http://localhost:8000',
+    servidiesel : 'https://imc-backend-dev.up.railway.app',
     transmal : 'http://localhost:8000',
   },
   websocket: {
     servidiesel: {
       broadcaster: 'reverb',
-      key: 'OPqUcEaBvucz3LHIIb4TQ9WDl5aTg4kA',
-      host: '192.168.1.67',
-      port: 8080,
-      scheme: 'http',
+      key: 'vaWzte7laWCyzlM5WTjYcW94UaFv0mjklS',
+      host: 'imc-backend-reverb-dev.up.railway.app',
+      port: 443,
+      scheme: 'https',
       path: '',
       channelType: 'public',
       channel: 'tracking.{unitId}',
