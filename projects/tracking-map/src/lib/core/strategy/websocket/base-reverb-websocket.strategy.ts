@@ -68,6 +68,7 @@ export abstract class BaseReverbWebsocketStrategy implements WebsocketStrategy {
       rendered_at: receivedAt,
       source: 'websocket',
       is_interpolated: false,
+      unit_number: payload.unit_number,
     };
   }
 
