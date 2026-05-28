@@ -114,6 +114,7 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
       zoom: this.resolveZoom(),
       center: this.center,
       maxBounds: this.mexicoBounds(),
+      attributionControl: false,
     });
 
     this.map = map;
