@@ -18,7 +18,15 @@ import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
 import { ClientType } from '../../core/types/provider_type';
 import { TrackingRepository } from '../../core/repositories/tracking_repository';
-import { forkJoin, Subscription, map, Observable, switchMap } from 'rxjs';
+import {
+  forkJoin,
+  Subscription,
+  map,
+  Observable,
+  switchMap,
+  distinctUntilChanged,
+  auditTime,
+} from 'rxjs';
 import { TrackingRoute } from '../../core/models/tracking_route';
 import { ColorUtils } from '../../core/utils/color_utils';
 import { RealtimeTrackingService } from '../../core/services/socket/realtime-tracking.service';
@@ -92,7 +100,11 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
 
   ngOnInit(): void {
     this.unitsSubscription = this.unitStateService.positions$
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        auditTime(32),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((positions) => {
         this.mapRenderService.renderUnits(positions);
 
@@ -101,8 +113,8 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
           positions.at(0);
 
         if (trackedUnit && this.followLiveUnit() && !this.hasFocusedLiveUnit) {
-          this.mapRenderService.focusUnit(trackedUnit, this.liveZoom());
           this.hasFocusedLiveUnit = true;
+          this.mapRenderService.focusUnit(trackedUnit, this.liveZoom());
         }
       });
   }
@@ -219,11 +231,15 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
     const config = this.realtimeTrackingService.getConfig(this.provider(), realtimeUnits[0]);
     const positions$ = this.realtimeTrackingService.trackUnits(this.provider(), realtimeUnits);
 
+    positions$.subscribe((position) => {
+      this.unitStateService.upsert(position);
+    });
+
     this.realtimeSubscription = this.markerAnimationService
       .animate(positions$, config.throttle.animationDurationMs, config.throttle.animationFrameMs)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((position) => {
-        this.unitStateService.upsert(position);
+        this.mapRenderService.renderUnits([position]);
       });
   }
 

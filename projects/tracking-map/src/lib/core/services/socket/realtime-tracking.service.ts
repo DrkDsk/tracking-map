@@ -1,13 +1,13 @@
 import { inject, Injectable, signal } from '@angular/core';
 import {
-  Observable,
-  Subject,
-  Subscription,
   asyncScheduler,
   distinctUntilChanged,
   filter,
   map,
+  Observable,
   shareReplay,
+  Subject,
+  Subscription,
   throttleTime,
 } from 'rxjs';
 import { ClientType } from '../../types/provider_type';
@@ -114,11 +114,7 @@ export class RealtimeTrackingService {
     return (
       previous.unit_id === current.unit_id &&
       previous.lat === current.lat &&
-      previous.lng === current.lng &&
-      previous.gps_time === current.gps_time &&
-      previous.speed === current.speed &&
-      previous.angle === current.angle &&
-      previous.acc === current.acc
+      previous.lng === current.lng
     );
   }
 
