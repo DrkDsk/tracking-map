@@ -36,6 +36,7 @@ import { TrackingSocketService } from '../../core/services/socket/tracking-socke
 import { ReverbSocketClient } from '../../core/services/socket/reverb-socket.client';
 import { createNeonMapStyle } from '../../core/utils/neon_map_style';
 import hybridStyle from '../../../assets/map-styles/style.json';
+import { TrackingPosition } from '../../core/models/tracking_position';
 
 const neonStyle: StyleSpecification = createNeonMapStyle(
   hybridStyle as unknown as StyleSpecification,
@@ -194,6 +195,29 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
         switchMap((trackingData): Observable<TrackingRoute[]> => {
           const data = trackingData.data;
           const outbound_orders = data.outbound_orders;
+
+          const currentTracking = data.current_tracking;
+          const now = Date.now();
+
+          const currentCoordinates: TrackingPosition = {
+            provider: this.provider(),
+            received_at: now,
+            rendered_at: now,
+            source: 'animation',
+            is_interpolated: false,
+            unit_id: currentTracking.unit_id,
+            unit_device_id: currentTracking.unit_device_id,
+            unique_id: '',
+            lat: parseFloat(String(currentTracking.lat)),
+            lng: parseFloat(String(currentTracking.lng)),
+            speed: currentTracking.speed,
+            angle: currentTracking.angle,
+            acc: currentTracking.acc,
+            gps_time: currentTracking.gps_time,
+            unit_number: data.unit_number,
+          };
+
+          this.unitStateService.upsert(currentCoordinates);
 
           return forkJoin(
             outbound_orders.map((route, index) => {
