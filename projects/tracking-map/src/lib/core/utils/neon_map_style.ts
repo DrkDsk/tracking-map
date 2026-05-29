@@ -93,7 +93,7 @@ function applyRoadHudStyle(layer: LineLayer): LineLayer {
 
   paint['line-color'] = pathLike
     ? NEON_MAP_THEME.palette.electricBlue
-    : ([
+    : [
         'match',
         ['get', 'class'],
         ['motorway', 'motorway_link', 'trunk', 'primary'],
@@ -101,12 +101,12 @@ function applyRoadHudStyle(layer: LineLayer): LineLayer {
         ['secondary', 'tertiary'],
         NEON_MAP_THEME.palette.electricBlue,
         NEON_MAP_THEME.palette.cyan,
-      ] as const);
+      ];
   paint['line-width'] = pathLike
-    ? (['interpolate', ['linear'], ['zoom'], 10, 0.35, 14, 0.8, 18, 1.8, 22, 3.4] as const)
+    ? ['interpolate', ['linear'], ['zoom'], 10, 0.35, 14, 0.8, 18, 1.8, 22, 3.4]
     : railLike
-      ? (['interpolate', ['linear'], ['zoom'], 8, 0.5, 12, 1.1, 16, 1.8, 20, 3.2] as const)
-      : ([
+      ? ['interpolate', ['linear'], ['zoom'], 8, 0.5, 12, 1.1, 16, 1.8, 20, 3.2]
+      : [
           'interpolate',
           ['linear'],
           ['zoom'],
@@ -120,22 +120,22 @@ function applyRoadHudStyle(layer: LineLayer): LineLayer {
           ['match', ['get', 'class'], ['motorway', 'motorway_link', 'trunk'], 5.6, 2.4],
           20,
           ['match', ['get', 'class'], ['motorway', 'motorway_link', 'trunk'], 10, 4.4],
-        ] as const);
+        ];
   paint['line-opacity'] = pathLike
-    ? (['interpolate', ['linear'], ['zoom'], 10, 0.25, 14, 0.5, 18, 0.72] as const)
+    ? ['interpolate', ['linear'], ['zoom'], 10, 0.25, 14, 0.5, 18, 0.72]
     : tunnelLike
-      ? (['interpolate', ['linear'], ['zoom'], 6, 0.22, 12, 0.48, 18, 0.72] as const)
+      ? ['interpolate', ['linear'], ['zoom'], 6, 0.22, 12, 0.48, 18, 0.72]
       : railLike
-        ? (['interpolate', ['linear'], ['zoom'], 8, 0.2, 12, 0.5, 18, 0.75] as const)
-        : (['interpolate', ['linear'], ['zoom'], 5, 0.32, 8, 0.58, 12, 0.82, 18, 0.96] as const);
+        ? ['interpolate', ['linear'], ['zoom'], 8, 0.2, 12, 0.5, 18, 0.75]
+        : ['interpolate', ['linear'], ['zoom'], 5, 0.32, 8, 0.58, 12, 0.82, 18, 0.96];
   paint['line-blur'] = pathLike
-    ? (['interpolate', ['linear'], ['zoom'], 10, 0.1, 16, 0.35, 20, 0.6] as const)
+    ? ['interpolate', ['linear'], ['zoom'], 10, 0.1, 16, 0.35, 20, 0.6]
     : tunnelLike
-      ? (['interpolate', ['linear'], ['zoom'], 6, 0.2, 12, 0.65, 18, 1.2] as const)
-      : (['interpolate', ['linear'], ['zoom'], 6, 0.25, 10, 0.8, 16, 1.4, 20, 2] as const);
+      ? ['interpolate', ['linear'], ['zoom'], 6, 0.2, 12, 0.65, 18, 1.2]
+      : ['interpolate', ['linear'], ['zoom'], 6, 0.25, 10, 0.8, 16, 1.4, 20, 2];
 
   if (!paint['line-dasharray'] && (pathLike || tunnelLike)) {
-    paint['line-dasharray'] = pathLike ? ([1.4, 1.1] as const) : ([0.9, 0.45] as const);
+    paint['line-dasharray'] = pathLike ? [1.4, 1.1] : [0.9, 0.45];
   }
 
   return layer;
@@ -147,8 +147,8 @@ function applyBoundaryHudStyle(layer: LineLayer): LineLayer {
   paint['line-color'] = matchesLayer(layer, ['disputed'])
     ? NEON_MAP_THEME.palette.cyan
     : NEON_MAP_THEME.palette.electricBlue;
-  paint['line-opacity'] = ['interpolate', ['linear'], ['zoom'], 2, 0.16, 6, 0.3, 10, 0.55] as const;
-  paint['line-blur'] = ['interpolate', ['linear'], ['zoom'], 2, 0.05, 8, 0.22, 14, 0.5] as const;
+  paint['line-opacity'] = ['interpolate', ['linear'], ['zoom'], 2, 0.16, 6, 0.3, 10, 0.55];
+  paint['line-blur'] = ['interpolate', ['linear'], ['zoom'], 2, 0.05, 8, 0.22, 14, 0.5];
 
   return layer;
 }
@@ -157,8 +157,8 @@ function applySecondaryLineHudStyle(layer: LineLayer): LineLayer {
   const paint = (layer.paint ??= {}) as NonNullable<LineLayer['paint']>;
 
   paint['line-color'] = NEON_MAP_THEME.palette.electricBlue;
-  paint['line-opacity'] = ['interpolate', ['linear'], ['zoom'], 6, 0.16, 12, 0.32, 18, 0.56] as const;
-  paint['line-blur'] = ['interpolate', ['linear'], ['zoom'], 6, 0.05, 12, 0.2, 18, 0.4] as const;
+  paint['line-opacity'] = ['interpolate', ['linear'], ['zoom'], 6, 0.16, 12, 0.32, 18, 0.56];
+  paint['line-blur'] = ['interpolate', ['linear'], ['zoom'], 6, 0.05, 12, 0.2, 18, 0.4];
 
   return layer;
 }
@@ -170,8 +170,8 @@ function applyLabelHudStyle(layer: SymbolLayer): SymbolLayer {
     ? NEON_MAP_THEME.palette.cyan
     : NEON_MAP_THEME.palette.electricBlue;
   paint['text-halo-color'] = 'rgba(2, 6, 23, 0.96)';
-  paint['text-halo-width'] = ['interpolate', ['linear'], ['zoom'], 3, 0.9, 8, 1.25, 16, 1.9] as const;
-  paint['text-halo-blur'] = ['interpolate', ['linear'], ['zoom'], 3, 0.4, 10, 0.8, 16, 1.2] as const;
+  paint['text-halo-width'] = ['interpolate', ['linear'], ['zoom'], 3, 0.9, 8, 1.25, 16, 1.9];
+  paint['text-halo-blur'] = ['interpolate', ['linear'], ['zoom'], 3, 0.4, 10, 0.8, 16, 1.2];
   paint['text-opacity'] = paint['text-opacity'] ?? 0.95;
 
   if ('icon-color' in paint) {
@@ -194,8 +194,8 @@ function applyWaterLabelHudStyle(layer: SymbolLayer): SymbolLayer {
 
   paint['text-color'] = NEON_MAP_THEME.palette.electricBlue;
   paint['text-halo-color'] = 'rgba(2, 6, 23, 0.98)';
-  paint['text-halo-width'] = ['interpolate', ['linear'], ['zoom'], 3, 1, 9, 1.4, 16, 2] as const;
-  paint['text-halo-blur'] = ['interpolate', ['linear'], ['zoom'], 3, 0.5, 10, 0.95, 16, 1.3] as const;
+  paint['text-halo-width'] = ['interpolate', ['linear'], ['zoom'], 3, 1, 9, 1.4, 16, 2];
+  paint['text-halo-blur'] = ['interpolate', ['linear'], ['zoom'], 3, 0.5, 10, 0.95, 16, 1.3];
   paint['text-opacity'] = paint['text-opacity'] ?? 0.9;
 
   return layer;
@@ -212,7 +212,7 @@ function createWaterOverlayLayer(): FillLayer {
     },
     paint: {
       'fill-color': NEON_MAP_THEME.palette.deepBlueWater,
-      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 1, 0.2, 6, 0.32, 12, 0.46, 18, 0.58] as const,
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 1, 0.2, 6, 0.32, 12, 0.46, 18, 0.58],
       'fill-antialias': true,
     },
   };
@@ -237,10 +237,10 @@ function createBuildingOverlayLayer(): FillExtrusionLayer {
         NEON_MAP_THEME.palette.graphite,
         16,
         '#0f172a',
-      ] as const,
-      'fill-extrusion-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.12, 16, 0.22, 19, 0.32] as const,
-      'fill-extrusion-height': ['coalesce', ['get', 'render_height'], ['get', 'height'], 0] as const,
-      'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0] as const,
+      ],
+      'fill-extrusion-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.12, 16, 0.22, 19, 0.32],
+      'fill-extrusion-height': ['coalesce', ['get', 'render_height'], ['get', 'height'], 0],
+      'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], ['get', 'min_height'], 0],
       'fill-extrusion-vertical-gradient': true,
     },
   };
@@ -274,7 +274,15 @@ function isSymbolLayer(layer: MapStyleLayer): layer is SymbolLayer {
 }
 
 function isRoadLikeLayer(layer: LineLayer): boolean {
-  return matchesLayer(layer, ['road', 'motorway', 'highway', 'street', 'path', 'pathway', 'tunnel']);
+  return matchesLayer(layer, [
+    'road',
+    'motorway',
+    'highway',
+    'street',
+    'path',
+    'pathway',
+    'tunnel',
+  ]);
 }
 
 function isBoundaryLayer(layer: LineLayer): boolean {

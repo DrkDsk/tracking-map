@@ -7,8 +7,9 @@ import { TrackingVideoComponent } from 'tracking-video';
   imports: [LiveMapComponent, TrackingVideoComponent],
   templateUrl: './app.html',
   styleUrl: './app.css',
+  standalone: true,
 })
 export class App {
-  protected readonly unitId = 280;
-  protected readonly trackedUnitIds = [280, 281];
+  protected readonly unitId = 140;
+  protected readonly trackedUnitIds = [140, 141];
 }

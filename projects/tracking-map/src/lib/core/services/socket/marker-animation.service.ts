@@ -51,9 +51,9 @@ export class MarkerAnimationService {
             }
 
             return timer(0, frameMs).pipe(
-              map((tick) => Math.min((tick * frameMs) / durationMs, 1)),
-              map((progress) => this.interpolate(previous, current, progress)),
-              takeWhile((_) => true, true),
+              map((tick) => (tick * frameMs) / durationMs),
+              takeWhile((progress) => progress <= 1),
+              map((progress) => this.interpolate(previous, current, Math.min(progress, 1))),
             );
           }),
         ),

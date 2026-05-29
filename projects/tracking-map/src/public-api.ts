@@ -9,3 +9,4 @@ export * from './lib/core/models/tracking_unit_reference';
 export * from './lib/core/models/websocket_connection_state';
 export * from './lib/core/services/socket/realtime-tracking.service';
 export * from './lib/core/services/socket/unit-state.service';
+import 'maplibre-gl/dist/maplibre-gl.css';

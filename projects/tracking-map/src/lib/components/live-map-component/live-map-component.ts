@@ -18,7 +18,15 @@ import { RoutingService } from '../../core/services/maps/routing_service';
 import { MapRenderService } from '../../core/services/maps/map-render.service';
 import { ClientType } from '../../core/types/provider_type';
 import { TrackingRepository } from '../../core/repositories/tracking_repository';
-import { forkJoin, Subscription, map, Observable, switchMap } from 'rxjs';
+import {
+  forkJoin,
+  Subscription,
+  map,
+  Observable,
+  switchMap,
+  distinctUntilChanged,
+  auditTime,
+} from 'rxjs';
 import { TrackingRoute } from '../../core/models/tracking_route';
 import { ColorUtils } from '../../core/utils/color_utils';
 import { RealtimeTrackingService } from '../../core/services/socket/realtime-tracking.service';
@@ -28,6 +36,7 @@ import { TrackingSocketService } from '../../core/services/socket/tracking-socke
 import { ReverbSocketClient } from '../../core/services/socket/reverb-socket.client';
 import { createNeonMapStyle } from '../../core/utils/neon_map_style';
 import hybridStyle from '../../../assets/map-styles/style.json';
+import { TrackingPosition } from '../../core/models/tracking_position';
 
 const neonStyle: StyleSpecification = createNeonMapStyle(
   hybridStyle as unknown as StyleSpecification,
@@ -92,7 +101,11 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
 
   ngOnInit(): void {
     this.unitsSubscription = this.unitStateService.positions$
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
+        auditTime(32),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((positions) => {
         this.mapRenderService.renderUnits(positions);
 
@@ -101,8 +114,8 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
           positions.at(0);
 
         if (trackedUnit && this.followLiveUnit() && !this.hasFocusedLiveUnit) {
-          this.mapRenderService.focusUnit(trackedUnit, this.liveZoom());
           this.hasFocusedLiveUnit = true;
+          this.mapRenderService.focusUnit(trackedUnit, this.liveZoom());
         }
       });
   }
@@ -183,6 +196,29 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
           const data = trackingData.data;
           const outbound_orders = data.outbound_orders;
 
+          const currentTracking = data.current_tracking;
+          const now = Date.now();
+
+          const currentCoordinates: TrackingPosition = {
+            provider: this.provider(),
+            received_at: now,
+            rendered_at: now,
+            source: 'animation',
+            is_interpolated: false,
+            unit_id: currentTracking.unit_id,
+            unit_device_id: currentTracking.unit_device_id,
+            unique_id: '',
+            lat: parseFloat(String(currentTracking.lat)),
+            lng: parseFloat(String(currentTracking.lng)),
+            speed: currentTracking.speed,
+            angle: currentTracking.angle,
+            acc: currentTracking.acc,
+            gps_time: currentTracking.gps_time,
+            unit_number: data.unit_number,
+          };
+
+          this.unitStateService.upsert(currentCoordinates);
+
           return forkJoin(
             outbound_orders.map((route, index) => {
               const routeId = route.id_seguimiento;
@@ -219,11 +255,15 @@ export class LiveMapComponent implements OnInit, AfterViewInit, OnChanges, OnDes
     const config = this.realtimeTrackingService.getConfig(this.provider(), realtimeUnits[0]);
     const positions$ = this.realtimeTrackingService.trackUnits(this.provider(), realtimeUnits);
 
+    positions$.subscribe((position) => {
+      this.unitStateService.upsert(position);
+    });
+
     this.realtimeSubscription = this.markerAnimationService
       .animate(positions$, config.throttle.animationDurationMs, config.throttle.animationFrameMs)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((position) => {
-        this.unitStateService.upsert(position);
+        this.mapRenderService.renderUnits([position]);
       });
   }
 
